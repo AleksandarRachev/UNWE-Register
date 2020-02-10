@@ -8,7 +8,8 @@ spring:
     password:
     initialization-mode: always
   jpa:
-    hibernate.ddl-auto: validate
+    show-sql: true
+    hibernate.ddl-auto: update
     generate-ddl: true
     properties:
       hibernate:
