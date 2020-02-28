@@ -35,6 +35,9 @@ public class Employer {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false, unique = true)
+    private String password;
+
     @Column(nullable = false)
     private String contactPerson;
 

@@ -32,6 +32,9 @@ public class Coordinator {
     @Column(nullable = false, unique = true)
     private String email;
 
+    @Column(nullable = false, unique = true)
+    private String password;
+
     @OneToMany(mappedBy = "coordinator")
     private List<Agreement> agreements;
 
