@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Table(name = "coordinators")
 @Entity
@@ -19,7 +20,7 @@ public class Coordinator {
     @GenericGenerator(name = "system-uuid", strategy = "uuid2")
     private String uid;
 
-    @OneToOne
+    @ManyToOne
     private Department department;
 
     @Column(nullable = false)
@@ -30,5 +31,8 @@ public class Coordinator {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    @OneToMany(mappedBy = "coordinator")
+    private List<Agreement> agreements;
 
 }

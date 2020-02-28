@@ -19,7 +19,8 @@ public class Event {
     @GenericGenerator(name = "system-uuid", strategy = "uuid2")
     private String uid;
 
-    @OneToOne
+    @ManyToOne
+    @JoinColumn(name = "activityPlan")
     private ActivityPlan activityPlan;
 
     @Column(nullable = false)

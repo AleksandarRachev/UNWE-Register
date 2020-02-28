@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Table(name = "employers")
 @Entity
@@ -36,5 +37,8 @@ public class Employer {
 
     @Column(nullable = false)
     private String contactPerson;
+
+    @OneToMany(mappedBy = "employer")
+    private List<Agreement> agreements;
 
 }

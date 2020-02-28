@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Table(name = "agreements")
 @Entity
@@ -19,10 +20,10 @@ public class Agreement {
     @GenericGenerator(name = "system-uuid", strategy = "uuid2")
     private String uid;
 
-    @OneToOne
+    @ManyToOne
     private Employer employer;
 
-    @OneToOne
+    @ManyToOne
     private Coordinator coordinator;
 
     @Column(nullable = false)
@@ -33,5 +34,8 @@ public class Agreement {
 
     @Column(nullable = false)
     private Long number;
+
+    @OneToMany(mappedBy = "agreement")
+    private List<ActivityPlan> activityPlans;
 
 }
