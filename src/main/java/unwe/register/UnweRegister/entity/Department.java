@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Table(name = "departments")
 @Entity
@@ -21,5 +22,8 @@ public class Department {
 
     @Column(nullable = false)
     private String name;
+
+    @OneToMany(mappedBy = "department")
+    private List<Coordinator> coordinators;
 
 }
