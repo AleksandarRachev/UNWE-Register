@@ -1,4 +1,5 @@
-package unwe.register.UnweRegister.entity;
+package unwe.register.UnweRegister.entities;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -6,13 +7,14 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
+import java.util.List;
 
-@Table(name = "events")
+@Table(name = "activity_plans")
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Event {
+public class ActivityPlan {
 
     @Id
     @GeneratedValue(generator = "system-uuid")
@@ -20,9 +22,11 @@ public class Event {
     private String uid;
 
     @ManyToOne
-    @JoinColumn(name = "activityPlan")
-    private ActivityPlan activityPlan;
+    private Agreement agreement;
 
     @Column(nullable = false)
     private String description;
+
+    @OneToMany(mappedBy = "activityPlan")
+    private List<Event> events;
 }

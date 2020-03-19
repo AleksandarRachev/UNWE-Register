@@ -1,4 +1,4 @@
-package unwe.register.UnweRegister.entity;
+package unwe.register.UnweRegister.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -21,10 +21,10 @@ public class Agreement {
     private String uid;
 
     @ManyToOne
-    private Employer employer;
+    private User employer;
 
     @ManyToOne
-    private Coordinator coordinator;
+    private User coordinator;
 
     @Column(nullable = false)
     private Long date;

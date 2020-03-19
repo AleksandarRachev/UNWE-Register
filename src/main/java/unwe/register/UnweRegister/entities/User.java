@@ -1,19 +1,20 @@
-package unwe.register.UnweRegister.entity;
+package unwe.register.UnweRegister.entities;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
+import unwe.register.UnweRegister.enums.Role;
 
 import javax.persistence.*;
 import java.util.List;
 
-@Table(name = "coordinators")
+@Table(name = "users")
 @Entity
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Coordinator {
+public class User {
 
     @Id
     @GeneratedValue(generator = "system-uuid")
@@ -24,7 +25,10 @@ public class Coordinator {
     private Department department;
 
     @Column(nullable = false)
-    private String name;
+    private String firstName;
+
+    @Column(nullable = false)
+    private String lastName;
 
     @Column(nullable = false, unique = true)
     private String phone;
@@ -34,6 +38,16 @@ public class Coordinator {
 
     @Column(nullable = false, unique = true)
     private String password;
+
+    @Column
+    private String address;
+
+    @Column
+    private String contactPerson;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private Role role;
 
     @OneToMany(mappedBy = "coordinator")
     private List<Agreement> agreements;
