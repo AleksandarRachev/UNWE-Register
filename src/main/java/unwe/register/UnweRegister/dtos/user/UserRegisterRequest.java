@@ -24,16 +24,17 @@ public class UserRegisterRequest implements UserAuthenticationRequest {
     @Size(min = 6, message = "Length must be at least 6 symbols!")
     private String repeatPassword;
 
-    @NotNull
+    @NotNull(message = "Phone must not be empty!")
     @Pattern(regexp = "(\\+)?(359|0)8[789]\\d{1}\\d{3}\\d{3}", message = "Invalid phone number!")
     private String phone;
 
-    @NotBlank
+    @NotBlank(message = "First name must not be empty!")
     private String firstName;
+
+    @NotBlank(message = "Last name must not be empty!")
+    private String lastName;
 
     private String department;
 
-    @NotBlank
-    private String lastName;
 
 }
