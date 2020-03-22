@@ -14,10 +14,7 @@ import unwe.register.UnweRegister.dtos.user.UserRegisterRequest;
 import unwe.register.UnweRegister.dtos.user.UserResponse;
 import unwe.register.UnweRegister.entities.User;
 import unwe.register.UnweRegister.enums.Role;
-import unwe.register.UnweRegister.exceptions.ElementAlreadyExistsException;
-import unwe.register.UnweRegister.exceptions.ElementNotPresentException;
-import unwe.register.UnweRegister.exceptions.PasswordsNotMatchingException;
-import unwe.register.UnweRegister.exceptions.WrongCredentialsException;
+import unwe.register.UnweRegister.exceptions.*;
 import unwe.register.UnweRegister.repositories.UserRepository;
 
 import java.io.IOException;
@@ -30,6 +27,11 @@ public class UserService {
     private static final String PHONE_TAKEN = "Phone taken";
     private static final String PASSWORDS_DOES_NOT_MATCH = "Passwords does not match";
     private static final String USER_NOT_FOUND = "User not found";
+    private static final String EMAIL_MUST_NOT_BE_EMPTY = "Email must not be empty!";
+    private static final String FIRST_NAME_MUST_NOT_BE_EMPTY = "First name must not be empty!";
+    private static final String LAST_NAME_MUST_NOT_BE_EMPTY = "Last name must not be empty!";
+    private static final String PHONE_MUST_NOT_BE_EMPTY = "Phone must not be empty!";
+    private static final String INVALID_PHONE_NUMBER = "Invalid phone number!";
 
     private final UserRepository userRepository;
 
@@ -103,18 +105,39 @@ public class UserService {
         }
     }
 
-    public UserResponse editProfile(UserEditPersonalInfoRequest userEdit,
-                                    MultipartFile multipartFile, String userId) throws IOException {
+    public UserResponse editProfile(UserEditPersonalInfoRequest userEdit, MultipartFile multipartFile,
+                                    String userId) throws IOException {
         User user = userRepository.findById(userId).orElseThrow(() -> new ElementNotPresentException(USER_NOT_FOUND));
-//        user.setEmail(userEdit.getEmail());
-//        user.setFirstName(userEdit.getFirstName());
-//        user.setLastName(userEdit.getLastName());
+
+        validateEditUserMandatoryFields(userEdit);
+
+        user.setEmail(userEdit.getEmail());
+        user.setFirstName(userEdit.getFirstName());
+        user.setLastName(userEdit.getLastName());
         user.setAddress(userEdit.getAddress());
         user.setContactPerson(userEdit.getContactPerson());
-        if(multipartFile != null) {
+        if (multipartFile != null) {
             user.setImage(multipartFile.getBytes());
         }
         return modelMapper.map(userRepository.save(user), UserResponse.class);
+    }
+
+    private void validateEditUserMandatoryFields(UserEditPersonalInfoRequest userEdit) {
+        if (userEdit.getEmail().isBlank()) {
+            throw new FieldMissingException(EMAIL_MUST_NOT_BE_EMPTY);
+        }
+        if (userEdit.getFirstName().isBlank()) {
+            throw new FieldMissingException(FIRST_NAME_MUST_NOT_BE_EMPTY);
+        }
+        if (userEdit.getLastName().isBlank()) {
+            throw new FieldMissingException(LAST_NAME_MUST_NOT_BE_EMPTY);
+        }
+        if(userEdit.getPhone().isBlank()){
+            throw new FieldMissingException(PHONE_MUST_NOT_BE_EMPTY);
+        }
+        if(!userEdit.getPhone().matches("(\\+)?(359|0)8[789]\\d{1}\\d{3}\\d{3}")){
+            throw new FieldValidationException(INVALID_PHONE_NUMBER);
+        }
     }
 
     public byte[] getUserPicture(String userId) {
@@ -122,7 +145,6 @@ public class UserService {
     }
 
     public String getUserPictureUrl(User user) {
-//        User user = userRepository.findById(userId).orElseThrow(() -> new ElementNotPresentException(USER_NOT_FOUND));
         return user.getImage() != null ? "http://localhost:8070/users/" + user.getUid() : null;
     }
 }

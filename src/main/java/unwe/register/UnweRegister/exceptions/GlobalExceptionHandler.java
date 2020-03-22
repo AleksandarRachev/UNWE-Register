@@ -10,17 +10,23 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler({ElementNotPresentException.class, ElementAlreadyExistsException.class,
+    @ExceptionHandler({FieldMissingException.class, ElementAlreadyExistsException.class,
             PasswordsNotMatchingException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorMessage> handleBadRequest(Exception e) {
-        return new ResponseEntity<>(new ErrorMessage(e.getMessage()), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(new ErrorMessage(e.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler({BadCredentialsException.class, WrongCredentialsException.class})
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<ErrorMessage> handleForbidden(Exception e) {
         return new ResponseEntity<>(new ErrorMessage(e.getMessage()), HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler({ElementNotPresentException.class})
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ResponseEntity<ErrorMessage> handleNotFound(Exception e) {
+        return new ResponseEntity<>(new ErrorMessage(e.getMessage()), HttpStatus.NOT_FOUND);
     }
 
 }

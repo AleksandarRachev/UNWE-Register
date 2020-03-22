@@ -39,14 +39,15 @@ public class UserController {
     @PutMapping
     @PreAuthorize("hasRole('EMPLOYER') or hasRole('COORDINATOR')")
     public ResponseEntity<UserResponse> editUserProfile(@RequestPart(value = "image", required = false) MultipartFile multipartFile,
-//                                                        @RequestParam("email") String email,
-//                                                        @RequestParam("firstName") String firstName,
-//                                                        @RequestParam("lastName") String lastName,
+                                                        @RequestParam("email") String email,
+                                                        @RequestParam("firstName") String firstName,
+                                                        @RequestParam("lastName") String lastName,
+                                                        @RequestParam("phone") String phone,
                                                         @RequestParam(value = "address", required = false) String address,
                                                         @RequestParam(value = "contactPerson", required = false) String contactPerson,
                                                         @RequestAttribute("userId") String userId) throws IOException {
         return ResponseEntity.ok(userService.editProfile(
-                new UserEditPersonalInfoRequest(address,contactPerson), multipartFile, userId));
+                new UserEditPersonalInfoRequest(email, firstName, lastName, phone, address, contactPerson), multipartFile, userId));
     }
 
     @GetMapping(value = "/{userId}", produces = MediaType.IMAGE_JPEG_VALUE)
@@ -54,11 +55,5 @@ public class UserController {
     public ResponseEntity<byte[]> getUserProfilePicture(@PathVariable("userId") String userId) {
         return ResponseEntity.ok(userService.getUserPicture(userId));
     }
-
-//    @GetMapping("/{userId}/url")
-//    @PreAuthorize("permitAll()")
-//    public ResponseEntity<String> getUserProfilePicUrl(@PathVariable("userId") String userId) {
-//        return ResponseEntity.ok(userService.getUserPictureUrl(userId));
-//    }
 
 }
