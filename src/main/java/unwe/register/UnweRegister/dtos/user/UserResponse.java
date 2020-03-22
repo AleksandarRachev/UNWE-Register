@@ -22,4 +22,10 @@ public class UserResponse {
 
     private Role role;
 
+    private String address;
+
+    private String contactPerson;
+
+    private String imageUrl;
+
 }

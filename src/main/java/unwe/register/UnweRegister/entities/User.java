@@ -45,6 +45,9 @@ public class User {
     @Column
     private String contactPerson;
 
+    @Lob
+    private byte[] image;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Role role;

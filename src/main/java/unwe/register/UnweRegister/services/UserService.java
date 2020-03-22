@@ -5,17 +5,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import unwe.register.UnweRegister.config.JwtTokenUtil;
+import unwe.register.UnweRegister.dtos.interfaces.UserAuthenticationRequest;
+import unwe.register.UnweRegister.dtos.user.UserEditPersonalInfoRequest;
 import unwe.register.UnweRegister.dtos.user.UserLoginRequest;
 import unwe.register.UnweRegister.dtos.user.UserRegisterRequest;
 import unwe.register.UnweRegister.dtos.user.UserResponse;
-import unwe.register.UnweRegister.dtos.interfaces.UserAuthenticationRequest;
 import unwe.register.UnweRegister.entities.User;
 import unwe.register.UnweRegister.enums.Role;
 import unwe.register.UnweRegister.exceptions.ElementAlreadyExistsException;
+import unwe.register.UnweRegister.exceptions.ElementNotPresentException;
 import unwe.register.UnweRegister.exceptions.PasswordsNotMatchingException;
 import unwe.register.UnweRegister.exceptions.WrongCredentialsException;
 import unwe.register.UnweRegister.repositories.UserRepository;
+
+import java.io.IOException;
 
 @Service
 public class UserService {
@@ -24,6 +29,7 @@ public class UserService {
     private static final String EMAIL_TAKEN = "Email taken";
     private static final String PHONE_TAKEN = "Phone taken";
     private static final String PASSWORDS_DOES_NOT_MATCH = "Passwords does not match";
+    private static final String USER_NOT_FOUND = "User not found";
 
     private final UserRepository userRepository;
 
@@ -47,7 +53,8 @@ public class UserService {
 
     private UserLoginResponse getUserRegisterResponse(UserAuthenticationRequest userAuthenticationRequest, User user) {
         UserResponse userLogin = new UserResponse(user.getUid(), user.getEmail(), user.getFirstName(),
-                user.getLastName(), user.getPhone(), user.getRole());
+                user.getLastName(), user.getPhone(), user.getRole(), user.getAddress(), user.getContactPerson(),
+                getUserPictureUrl(user));
 
         final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(userAuthenticationRequest.getEmail());
         return new UserLoginResponse(jwtTokenUtil.generateToken(userDetails), userLogin);
@@ -94,5 +101,28 @@ public class UserService {
         if (!userRegisterRequest.getPassword().equals(userRegisterRequest.getRepeatPassword())) {
             throw new PasswordsNotMatchingException(PASSWORDS_DOES_NOT_MATCH);
         }
+    }
+
+    public UserResponse editProfile(UserEditPersonalInfoRequest userEdit,
+                                    MultipartFile multipartFile, String userId) throws IOException {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ElementNotPresentException(USER_NOT_FOUND));
+//        user.setEmail(userEdit.getEmail());
+//        user.setFirstName(userEdit.getFirstName());
+//        user.setLastName(userEdit.getLastName());
+        user.setAddress(userEdit.getAddress());
+        user.setContactPerson(userEdit.getContactPerson());
+        if(multipartFile != null) {
+            user.setImage(multipartFile.getBytes());
+        }
+        return modelMapper.map(userRepository.save(user), UserResponse.class);
+    }
+
+    public byte[] getUserPicture(String userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new ElementNotPresentException(USER_NOT_FOUND)).getImage();
+    }
+
+    public String getUserPictureUrl(User user) {
+//        User user = userRepository.findById(userId).orElseThrow(() -> new ElementNotPresentException(USER_NOT_FOUND));
+        return user.getImage() != null ? "http://localhost:8070/users/" + user.getUid() : null;
     }
 }
