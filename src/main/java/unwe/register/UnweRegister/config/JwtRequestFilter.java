@@ -104,7 +104,8 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     private boolean isUserPathPermitted(HttpServletRequest request) {
-        return request.getServletPath().startsWith("/users")
-                && !(request.getMethod().equalsIgnoreCase("put") && request.getServletPath().equals("/users"));
+        return (request.getMethod().equalsIgnoreCase("post") && request.getServletPath().equals("/users/login"))
+                || (request.getMethod().equalsIgnoreCase("post") && request.getServletPath().equals("/users"))
+                || (request.getMethod().equalsIgnoreCase("get") && request.getServletPath().matches("/users/.*"));
     }
 }

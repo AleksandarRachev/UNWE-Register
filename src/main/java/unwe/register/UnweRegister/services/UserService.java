@@ -8,10 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import unwe.register.UnweRegister.config.JwtTokenUtil;
 import unwe.register.UnweRegister.dtos.interfaces.UserAuthenticationRequest;
-import unwe.register.UnweRegister.dtos.user.UserEditPersonalInfoRequest;
-import unwe.register.UnweRegister.dtos.user.UserLoginRequest;
-import unwe.register.UnweRegister.dtos.user.UserRegisterRequest;
-import unwe.register.UnweRegister.dtos.user.UserResponse;
+import unwe.register.UnweRegister.dtos.user.*;
 import unwe.register.UnweRegister.entities.User;
 import unwe.register.UnweRegister.enums.Role;
 import unwe.register.UnweRegister.exceptions.*;
@@ -32,6 +29,7 @@ public class UserService {
     private static final String LAST_NAME_MUST_NOT_BE_EMPTY = "Last name must not be empty!";
     private static final String PHONE_MUST_NOT_BE_EMPTY = "Phone must not be empty!";
     private static final String INVALID_PHONE_NUMBER = "Invalid phone number!";
+    public static final String SUCCESSFULLY_EDITED_PASSWORD = "Successfully edited password";
 
     private final UserRepository userRepository;
 
@@ -146,5 +144,23 @@ public class UserService {
 
     public String getUserPictureUrl(User user) {
         return user.getImage() != null ? "http://localhost:8070/users/" + user.getUid() : null;
+    }
+
+    public String editPassword(EditPasswordRequest editPasswordRequest, String userId) {
+        User user = userRepository.findById(userId).orElseThrow(() -> new ElementNotPresentException(USER_NOT_FOUND));
+
+        if(!passwordEncoder.matches(editPasswordRequest.getCurrentPassword(), user.getPassword())){
+            throw new WrongCredentialsException(WRONG_CREDENTIALS);
+        }
+
+        if(!editPasswordRequest.getPassword().equals(editPasswordRequest.getRepeatPassword())){
+            throw new PasswordsNotMatchingException(PASSWORDS_DOES_NOT_MATCH);
+        }
+
+        user.setPassword(passwordEncoder.encode(editPasswordRequest.getPassword()));
+
+        userRepository.save(user);
+
+        return SUCCESSFULLY_EDITED_PASSWORD;
     }
 }

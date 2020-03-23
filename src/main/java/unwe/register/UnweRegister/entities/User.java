@@ -40,10 +40,10 @@ public class User {
     private String password;
 
     @Column
-    private String address;
+    private String address= "";
 
     @Column
-    private String contactPerson;
+    private String contactPerson = "";
 
     @Lob
     private byte[] image;

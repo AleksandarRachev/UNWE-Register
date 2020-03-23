@@ -6,10 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import unwe.register.UnweRegister.dtos.user.UserEditPersonalInfoRequest;
-import unwe.register.UnweRegister.dtos.user.UserLoginRequest;
-import unwe.register.UnweRegister.dtos.user.UserRegisterRequest;
-import unwe.register.UnweRegister.dtos.user.UserResponse;
+import unwe.register.UnweRegister.dtos.user.*;
 import unwe.register.UnweRegister.services.UserLoginResponse;
 import unwe.register.UnweRegister.services.UserService;
 
@@ -54,6 +51,13 @@ public class UserController {
     @PreAuthorize("permitAll()")
     public ResponseEntity<byte[]> getUserProfilePicture(@PathVariable("userId") String userId) {
         return ResponseEntity.ok(userService.getUserPicture(userId));
+    }
+
+    @PutMapping("/password")
+    @PreAuthorize("hasRole('EMPLOYER') or hasRole('COORDINATOR')")
+    public ResponseEntity<String> editPassword(@Valid @RequestBody EditPasswordRequest editPasswordRequest,
+                                               @RequestAttribute("userId") String userId) {
+        return ResponseEntity.ok(userService.editPassword(editPasswordRequest, userId));
     }
 
 }

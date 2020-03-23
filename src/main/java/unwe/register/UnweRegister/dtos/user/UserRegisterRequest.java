@@ -20,7 +20,7 @@ public class UserRegisterRequest implements UserAuthenticationRequest {
     @Size(min = 6, message = "Length must be at least 6 symbols!")
     private String password;
 
-    @NotBlank(message = "Password must not be empty!")
+    @NotBlank(message = "Repeat password must not be empty!")
     @Size(min = 6, message = "Length must be at least 6 symbols!")
     private String repeatPassword;
 
