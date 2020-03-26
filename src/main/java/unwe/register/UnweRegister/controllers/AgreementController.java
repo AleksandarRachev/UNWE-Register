@@ -8,16 +8,19 @@ import unwe.register.UnweRegister.dtos.agreements.AgreementRequest;
 import unwe.register.UnweRegister.dtos.agreements.AgreementResponse;
 import unwe.register.UnweRegister.services.AgreementService;
 
+import javax.validation.Valid;
+
 @RestController
 @RequestMapping("/agreements")
+@CrossOrigin("*")
 public class AgreementController {
 
     @Autowired
     private AgreementService agreementService;
 
     @PostMapping
-    @PreAuthorize("hasRole('EMPLOYER')")
-    public ResponseEntity<AgreementResponse> addAgreement(@RequestBody AgreementRequest agreementRequest,
+    @PreAuthorize("hasRole('COORDINATOR')")
+    public ResponseEntity<AgreementResponse> addAgreement(@Valid @RequestBody AgreementRequest agreementRequest,
                                                           @RequestAttribute("userId") String userId) {
         return ResponseEntity.ok(agreementService.addAgreement(agreementRequest, userId));
     }

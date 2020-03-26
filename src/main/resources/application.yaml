@@ -19,3 +19,6 @@ jwt:
   expiration: 7200 #seconds
   secret: SuperSecretKey
 
+picture:
+  url: http://localhost:8070/users/
+

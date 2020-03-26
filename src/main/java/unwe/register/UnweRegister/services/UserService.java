@@ -2,6 +2,7 @@ package unwe.register.UnweRegister.services;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,8 @@ import unwe.register.UnweRegister.exceptions.*;
 import unwe.register.UnweRegister.repositories.UserRepository;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -30,6 +33,7 @@ public class UserService {
     private static final String PHONE_MUST_NOT_BE_EMPTY = "Phone must not be empty!";
     private static final String INVALID_PHONE_NUMBER = "Invalid phone number!";
     public static final String SUCCESSFULLY_EDITED_PASSWORD = "Successfully edited password";
+    private static final String PHONE_REGEX = "(\\+)?(359|0)8[789]\\d{1}\\d{3}\\d{3}";
 
     private final UserRepository userRepository;
 
@@ -40,6 +44,9 @@ public class UserService {
     private final JwtUserDetailsService jwtUserDetailsService;
 
     private final JwtTokenUtil jwtTokenUtil;
+
+    @Value("${picture.url}")
+    private String pictureUrl;
 
     @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper,
@@ -133,7 +140,7 @@ public class UserService {
         if (userEdit.getPhone().isBlank()) {
             throw new FieldMissingException(PHONE_MUST_NOT_BE_EMPTY);
         }
-        if (!userEdit.getPhone().matches("(\\+)?(359|0)8[789]\\d{1}\\d{3}\\d{3}")) {
+        if (!userEdit.getPhone().matches(PHONE_REGEX)) {
             throw new FieldValidationException(INVALID_PHONE_NUMBER);
         }
     }
@@ -147,7 +154,7 @@ public class UserService {
     }
 
     public String getUserPictureUrl(User user) {
-        return user.getImage() != null ? "http://localhost:8070/users/" + user.getUid() : null;
+        return user.getImage() != null ? pictureUrl + user.getUid() : null;
     }
 
     public String editPassword(EditPasswordRequest editPasswordRequest, String userId) {
@@ -166,5 +173,12 @@ public class UserService {
         userRepository.save(user);
 
         return SUCCESSFULLY_EDITED_PASSWORD;
+    }
+
+    public List<UserResponse> getAllEmployers() {
+        return userRepository.findAllByRole(Role.EMPLOYER)
+                .stream()
+                .map(user -> modelMapper.map(user, UserResponse.class))
+                .collect(Collectors.toList());
     }
 }

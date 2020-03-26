@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 @Data
@@ -15,7 +16,7 @@ public class AgreementRequest {
     @NotBlank(message = "Employer not selected!")
     private String employerId;
 
-    @NotBlank(message = "Date of agreement not selected!")
+    @NotNull(message = "Date of agreement not selected!")
     private Long date;
 
     @NotBlank(message = "Title must not be empty!")

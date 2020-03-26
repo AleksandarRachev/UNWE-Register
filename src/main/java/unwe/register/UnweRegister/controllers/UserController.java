@@ -12,6 +12,7 @@ import unwe.register.UnweRegister.services.UserService;
 
 import javax.validation.Valid;
 import java.io.IOException;
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -58,6 +59,12 @@ public class UserController {
     public ResponseEntity<String> editPassword(@Valid @RequestBody EditPasswordRequest editPasswordRequest,
                                                @RequestAttribute("userId") String userId) {
         return ResponseEntity.ok(userService.editPassword(editPasswordRequest, userId));
+    }
+
+    @GetMapping
+    @PreAuthorize("hasRole('COORDINATOR')")
+    public ResponseEntity<List<UserResponse>> getAllEmployers() {
+        return ResponseEntity.ok(userService.getAllEmployers());
     }
 
 }
