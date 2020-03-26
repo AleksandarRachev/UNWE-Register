@@ -105,7 +105,7 @@ public class UserService {
 
     public UserResponse editProfile(UserEditPersonalInfoRequest userEdit, MultipartFile multipartFile,
                                     String userId) throws IOException {
-        User user = userRepository.findById(userId).orElseThrow(() -> new ElementNotPresentException(USER_NOT_FOUND));
+        User user = getUser(userId);
 
         validateEditUserMandatoryFields(userEdit);
 
@@ -130,16 +130,20 @@ public class UserService {
         if (userEdit.getLastName().isBlank()) {
             throw new FieldMissingException(LAST_NAME_MUST_NOT_BE_EMPTY);
         }
-        if(userEdit.getPhone().isBlank()){
+        if (userEdit.getPhone().isBlank()) {
             throw new FieldMissingException(PHONE_MUST_NOT_BE_EMPTY);
         }
-        if(!userEdit.getPhone().matches("(\\+)?(359|0)8[789]\\d{1}\\d{3}\\d{3}")){
+        if (!userEdit.getPhone().matches("(\\+)?(359|0)8[789]\\d{1}\\d{3}\\d{3}")) {
             throw new FieldValidationException(INVALID_PHONE_NUMBER);
         }
     }
 
     public byte[] getUserPicture(String userId) {
-        return userRepository.findById(userId).orElseThrow(() -> new ElementNotPresentException(USER_NOT_FOUND)).getImage();
+        return getUser(userId).getImage();
+    }
+
+    protected User getUser(String userId) {
+        return userRepository.findById(userId).orElseThrow(() -> new ElementNotPresentException(USER_NOT_FOUND));
     }
 
     public String getUserPictureUrl(User user) {
@@ -147,13 +151,13 @@ public class UserService {
     }
 
     public String editPassword(EditPasswordRequest editPasswordRequest, String userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new ElementNotPresentException(USER_NOT_FOUND));
+        User user = getUser(userId);
 
-        if(!passwordEncoder.matches(editPasswordRequest.getCurrentPassword(), user.getPassword())){
+        if (!passwordEncoder.matches(editPasswordRequest.getCurrentPassword(), user.getPassword())) {
             throw new WrongCredentialsException(WRONG_CREDENTIALS);
         }
 
-        if(!editPasswordRequest.getPassword().equals(editPasswordRequest.getRepeatPassword())){
+        if (!editPasswordRequest.getPassword().equals(editPasswordRequest.getRepeatPassword())) {
             throw new PasswordsNotMatchingException(PASSWORDS_DOES_NOT_MATCH);
         }
 
