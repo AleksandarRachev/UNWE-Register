@@ -6,4 +6,7 @@ import unwe.register.UnweRegister.entities.Agreement;
 
 @Repository
 public interface AgreementRepository extends JpaRepository<Agreement, String> {
+
+    long count();
+
 }
