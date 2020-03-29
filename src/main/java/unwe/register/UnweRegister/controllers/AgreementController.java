@@ -7,10 +7,10 @@ import org.springframework.web.bind.annotation.*;
 import unwe.register.UnweRegister.dtos.agreements.AgreementRequest;
 import unwe.register.UnweRegister.dtos.agreements.AgreementResponse;
 import unwe.register.UnweRegister.dtos.agreements.AgreementsCatalogResponse;
+import unwe.register.UnweRegister.dtos.agreements.EditAgreementRequest;
 import unwe.register.UnweRegister.services.AgreementService;
 
 import javax.validation.Valid;
-import java.util.List;
 
 @RestController
 @RequestMapping("/agreements")
@@ -27,9 +27,16 @@ public class AgreementController {
         return ResponseEntity.ok(agreementService.addAgreement(agreementRequest, userId));
     }
 
+    @PutMapping
+    @PreAuthorize("hasRole('COORDINATOR')")
+    public ResponseEntity<AgreementResponse> editAgreement(@Valid @RequestBody EditAgreementRequest editagreementRequest,
+                                                           @RequestAttribute("userId") String userId) {
+        return ResponseEntity.ok(agreementService.editAgreement(editagreementRequest, userId));
+    }
+
     @GetMapping
     @PreAuthorize("hasRole('COORDINATOR')")
-    public ResponseEntity<AgreementsCatalogResponse> getAllAgreements(@RequestParam("page") int page){
+    public ResponseEntity<AgreementsCatalogResponse> getAllAgreements(@RequestParam("page") int page) {
         return ResponseEntity.ok(agreementService.getAllAgreements(page));
     }
 
@@ -37,6 +44,13 @@ public class AgreementController {
     @PreAuthorize("hasRole('COORDINATOR')")
     public ResponseEntity<AgreementResponse> getAgreementInfo(@PathVariable("agreementId") String agreementId) {
         return ResponseEntity.ok(agreementService.getAgreementInfo(agreementId));
+    }
+
+    @DeleteMapping("/{agreementId}")
+    @PreAuthorize("hasRole('COORDINATOR')")
+    public ResponseEntity<String> deleteAgreement(@PathVariable("agreementId") String agreementId,
+                                                  @RequestAttribute("userId") String coordinatorId) {
+        return ResponseEntity.ok(agreementService.deleteAgreement(agreementId));
     }
 
 }

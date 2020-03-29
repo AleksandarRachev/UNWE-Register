@@ -7,9 +7,11 @@ import org.springframework.stereotype.Service;
 import unwe.register.UnweRegister.dtos.agreements.AgreementRequest;
 import unwe.register.UnweRegister.dtos.agreements.AgreementResponse;
 import unwe.register.UnweRegister.dtos.agreements.AgreementsCatalogResponse;
+import unwe.register.UnweRegister.dtos.agreements.EditAgreementRequest;
 import unwe.register.UnweRegister.entities.Agreement;
 import unwe.register.UnweRegister.entities.User;
 import unwe.register.UnweRegister.exceptions.ElementNotPresentException;
+import unwe.register.UnweRegister.exceptions.InvalidOperationException;
 import unwe.register.UnweRegister.repositories.AgreementRepository;
 
 import java.util.List;
@@ -19,6 +21,9 @@ import java.util.stream.Collectors;
 public class AgreementService {
 
     private static final int ELEMENTS_PER_PAGE = 10;
+    private static final String AGREEMENT_NOT_FOUND = "Agreement not found";
+    private static final String UNABLE_TO_EDIT = "You cannot edit this agreement!";
+    private static final String AGREEMENT_DELETED_SUCCESSFULLY = "Agreement deleted successfully";
 
     private final AgreementRepository agreementRepository;
 
@@ -47,7 +52,7 @@ public class AgreementService {
     }
 
     public AgreementsCatalogResponse getAllAgreements(int page) {
-        List<AgreementResponse> agreements = agreementRepository.findAll(PageRequest.of(page, ELEMENTS_PER_PAGE))
+        List<AgreementResponse> agreements = agreementRepository.findAllByOrderByDateDesc(PageRequest.of(page, ELEMENTS_PER_PAGE))
                 .stream()
                 .map(agreement -> modelMapper.map(agreement, AgreementResponse.class))
                 .collect(Collectors.toList());
@@ -56,8 +61,37 @@ public class AgreementService {
     }
 
     public AgreementResponse getAgreementInfo(String agreementId) {
-        return modelMapper.map(agreementRepository.findById(agreementId)
-                        .orElseThrow(() -> new ElementNotPresentException("Agreement not found")),
+        return modelMapper.map(getAgreementById(agreementId),
                 AgreementResponse.class);
+    }
+
+    private Agreement getAgreementById(String agreementId) {
+        return agreementRepository.findById(agreementId)
+                .orElseThrow(() -> new ElementNotPresentException(AGREEMENT_NOT_FOUND));
+    }
+
+    public AgreementResponse editAgreement(EditAgreementRequest editagreementRequest, String coordinatorId) {
+        Agreement agreement = getAgreementById(editagreementRequest.getUid());
+        User coordinator = userService.getUser(coordinatorId);
+
+        if(!agreement.getCoordinator().getUid().equals(coordinatorId)){
+            throw new InvalidOperationException(UNABLE_TO_EDIT);
+        }
+
+        User employer = userService.getUser(editagreementRequest.getEmployerId());
+
+        agreement.setTitle(editagreementRequest.getTitle());
+        agreement.setDescription(editagreementRequest.getDescription());
+        agreement.setDate(editagreementRequest.getDate());
+        agreement.setEmployer(employer);
+        agreement.setCoordinator(coordinator);
+
+        return modelMapper.map(agreementRepository.save(agreement), AgreementResponse.class);
+    }
+
+    public String deleteAgreement(String agreementId) {
+        Agreement agreement = getAgreementById(agreementId);
+        agreementRepository.delete(agreement);
+        return AGREEMENT_DELETED_SUCCESSFULLY;
     }
 }

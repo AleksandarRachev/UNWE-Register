@@ -11,6 +11,8 @@ public class AgreementResponse {
 
     private String uid;
 
+    private String employerUid;
+
     private String employerFirstName;
 
     private String employerLastName;
