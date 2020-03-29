@@ -34,7 +34,8 @@ public class UserRegisterRequest implements UserAuthenticationRequest {
     @NotBlank(message = "Last name must not be empty!")
     private String lastName;
 
-    private String department;
+    private String departmentId;
 
+    private String companyName;
 
 }

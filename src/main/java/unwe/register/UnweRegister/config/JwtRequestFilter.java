@@ -107,6 +107,6 @@ public class JwtRequestFilter extends OncePerRequestFilter {
         return (request.getMethod().equalsIgnoreCase("post") && request.getServletPath().equals("/users/login"))
                 || (request.getMethod().equalsIgnoreCase("post") && request.getServletPath().equals("/users"))
                 || (request.getMethod().equalsIgnoreCase("get") && request.getServletPath().matches("/users/.*"))
-                || (request.getMethod().equalsIgnoreCase("get") && request.getServletPath().equals("/agreements"));
+                || (request.getMethod().equalsIgnoreCase("get") && request.getServletPath().equals("/departments"));
     }
 }

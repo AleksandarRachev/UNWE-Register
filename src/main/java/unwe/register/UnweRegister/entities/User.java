@@ -39,11 +39,11 @@ public class User {
     @Column(nullable = false, unique = true)
     private String password;
 
-    @Column
-    private String address= "";
+    private String address = "";
 
-    @Column
     private String contactPerson = "";
+
+    private String companyName = "";
 
     @Lob
     private byte[] image;

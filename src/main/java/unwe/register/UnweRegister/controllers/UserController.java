@@ -22,6 +22,12 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @PostMapping("/checkLogged")
+    @PreAuthorize("hasRole('EMPLOYER') or hasRole('COORDINATOR')")
+    public ResponseEntity<String> checkIfLogged() {
+        return ResponseEntity.ok("Hello");
+    }
+
     @PostMapping("/login")
     @PreAuthorize("permitAll()")
     public ResponseEntity<UserLoginResponse> loginUser(@RequestBody UserLoginRequest userLoginRequest) {

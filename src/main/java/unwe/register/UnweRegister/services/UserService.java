@@ -83,7 +83,7 @@ public class UserService {
 
         User user = modelMapper.map(userRegisterRequest, User.class);
 
-        if (userRegisterRequest.getDepartment() == null) {
+        if (userRegisterRequest.getDepartmentId() == null) {
             user.setRole(Role.EMPLOYER);
         } else {
             user.setRole(Role.COORDINATOR);

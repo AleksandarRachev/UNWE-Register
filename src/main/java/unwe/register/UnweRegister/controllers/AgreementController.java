@@ -28,7 +28,7 @@ public class AgreementController {
     }
 
     @GetMapping
-    @PreAuthorize("permitAll()")
+    @PreAuthorize("hasRole('COORDINATOR')")
     public ResponseEntity<AgreementsCatalogResponse> getAllAgreements(@RequestParam("page") int page){
         return ResponseEntity.ok(agreementService.getAllAgreements(page));
     }
