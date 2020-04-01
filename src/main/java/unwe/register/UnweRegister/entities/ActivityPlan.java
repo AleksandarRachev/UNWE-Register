@@ -1,9 +1,7 @@
 package unwe.register.UnweRegister.entities;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -14,6 +12,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class ActivityPlan {
 
     @Id
@@ -22,9 +21,11 @@ public class ActivityPlan {
     private String uid;
 
     @ManyToOne
+    @NonNull
     private Agreement agreement;
 
     @Column(nullable = false)
+    @NonNull
     private String description;
 
     @OneToMany(mappedBy = "activityPlan")

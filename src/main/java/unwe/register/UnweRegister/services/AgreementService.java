@@ -94,4 +94,9 @@ public class AgreementService {
         agreementRepository.delete(agreement);
         return AGREEMENT_DELETED_SUCCESSFULLY;
     }
+
+    public Agreement getAgreementByNumber(Long agreementNumber) {
+        return agreementRepository.findByNumber(agreementNumber)
+                .orElseThrow(() -> new ElementNotPresentException(AGREEMENT_NOT_FOUND));
+    }
 }
