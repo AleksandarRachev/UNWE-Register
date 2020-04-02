@@ -38,7 +38,7 @@ public class Agreement {
     @Column(nullable = false)
     private Long number;
 
-    @OneToMany(mappedBy = "agreement")
+    @OneToMany(mappedBy = "agreement", cascade = CascadeType.ALL)
     private List<ActivityPlan> activityPlans;
 
     @PrePersist

@@ -24,9 +24,7 @@ public class UserController {
 
     @PostMapping("/checkLogged")
     @PreAuthorize("hasRole('EMPLOYER') or hasRole('COORDINATOR')")
-    public ResponseEntity<String> checkIfLogged() {
-        return ResponseEntity.ok("Hello");
-    }
+    public void checkIfLogged() {}
 
     @PostMapping("/login")
     @PreAuthorize("permitAll()")

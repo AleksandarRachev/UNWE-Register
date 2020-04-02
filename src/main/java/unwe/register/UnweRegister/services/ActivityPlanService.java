@@ -9,6 +9,7 @@ import unwe.register.UnweRegister.dtos.activityPlan.ActivityPlanResponse;
 import unwe.register.UnweRegister.dtos.activityPlan.ActivityPlansCatalogResponse;
 import unwe.register.UnweRegister.entities.ActivityPlan;
 import unwe.register.UnweRegister.entities.Agreement;
+import unwe.register.UnweRegister.exceptions.ElementNotPresentException;
 import unwe.register.UnweRegister.repositories.ActivityPlanRepository;
 
 import java.util.List;
@@ -18,6 +19,8 @@ import java.util.stream.Collectors;
 public class ActivityPlanService {
 
     private static final int ELEMENTS_PER_PAGE = 10;
+    private static final String SUCCESS_DELETE = "Activity plan deleted successfully!";
+    private static final String ACTIVITY_PLAN_NOT_FOUND = "Activity plan not found!";
 
     private final ActivityPlanRepository activityPlanRepository;
 
@@ -48,5 +51,13 @@ public class ActivityPlanService {
                 .collect(Collectors.toList());
 
         return new ActivityPlansCatalogResponse(activityPlans, activityPlanRepository.count());
+    }
+
+    public String deleteActivityPlan(String activityPlanId) {
+        ActivityPlan activityPlan = activityPlanRepository.findById(activityPlanId)
+                .orElseThrow(() -> new ElementNotPresentException(ACTIVITY_PLAN_NOT_FOUND));
+
+        activityPlanRepository.delete(activityPlan);
+        return SUCCESS_DELETE;
     }
 }

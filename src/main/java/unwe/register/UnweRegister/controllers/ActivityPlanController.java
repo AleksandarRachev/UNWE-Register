@@ -15,13 +15,13 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/activityPlans")
 @CrossOrigin("*")
+@PreAuthorize("hasRole('COORDINATOR')")
 public class ActivityPlanController {
 
     @Autowired
     private ActivityPlanService activityPlanService;
 
     @PostMapping
-    @PreAuthorize("hasRole('COORDINATOR')")
     public ResponseEntity<ActivityPlanResponse> addActivityPlan(@Valid @RequestBody ActivityPlanRequest activityPlanRequest) {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
@@ -29,9 +29,12 @@ public class ActivityPlanController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('COORDINATOR')")
     public ResponseEntity<ActivityPlansCatalogResponse> getActivityPlans(@RequestParam("page") int page){
         return ResponseEntity.ok(activityPlanService.getActivityPlans(page));
     }
 
+    @DeleteMapping("/{activityPlanId}")
+    public ResponseEntity<String> deleteActivityPlan(@PathVariable("activityPlanId") String activityPlanId) {
+        return ResponseEntity.ok(activityPlanService.deleteActivityPlan(activityPlanId));
+    }
 }
