@@ -1,8 +1,6 @@
 package unwe.register.UnweRegister.entities;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -12,6 +10,7 @@ import javax.persistence.*;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@RequiredArgsConstructor
 public class Event {
 
     @Id
@@ -21,8 +20,17 @@ public class Event {
 
     @ManyToOne
     @JoinColumn(name = "activityPlan")
+    @NonNull
     private ActivityPlan activityPlan;
 
     @Column(nullable = false)
+    @NonNull
+    private String title;
+
+    @Column(nullable = false, length = 2000)
+    @NonNull
     private String description;
+
+    @Lob
+    private byte[] image;
 }

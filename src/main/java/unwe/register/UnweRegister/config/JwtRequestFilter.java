@@ -94,7 +94,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
 
     private boolean isImagePathPermitted(HttpServletRequest request) {
         return (request.getMethod().equalsIgnoreCase("get")
-                && request.getServletPath().startsWith("/products/image"));
+                && request.getServletPath().startsWith("/images"));
     }
 
     //custom method for filtering
@@ -106,7 +106,7 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     private boolean isUserPathPermitted(HttpServletRequest request) {
         return (request.getMethod().equalsIgnoreCase("post") && request.getServletPath().equals("/users/login"))
                 || (request.getMethod().equalsIgnoreCase("post") && request.getServletPath().equals("/users"))
-                || (request.getMethod().equalsIgnoreCase("get") && request.getServletPath().matches("/users/.*"))
+                || (request.getMethod().equalsIgnoreCase("get") && request.getServletPath().equals("/events"))
                 || (request.getMethod().equalsIgnoreCase("get") && request.getServletPath().equals("/departments"));
     }
 }

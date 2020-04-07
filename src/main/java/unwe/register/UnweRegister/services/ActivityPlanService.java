@@ -60,4 +60,9 @@ public class ActivityPlanService {
         activityPlanRepository.delete(activityPlan);
         return SUCCESS_DELETE;
     }
+
+    public ActivityPlan getActivityPlan(String activityPlanId) {
+        return activityPlanRepository.findById(activityPlanId)
+                .orElseThrow(() -> new ElementNotPresentException(ACTIVITY_PLAN_NOT_FOUND));
+    }
 }

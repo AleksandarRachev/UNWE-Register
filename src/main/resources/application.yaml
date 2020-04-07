@@ -20,5 +20,7 @@ jwt:
   secret: SuperSecretKey
 
 picture:
-  url: http://localhost:8070/users/
+  url:
+    user: http://localhost:8070/images/user/
+    event: http://localhost:8070/images/event/
 

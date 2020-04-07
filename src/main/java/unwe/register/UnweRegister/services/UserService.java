@@ -32,7 +32,7 @@ public class UserService {
     private static final String LAST_NAME_MUST_NOT_BE_EMPTY = "Last name must not be empty!";
     private static final String PHONE_MUST_NOT_BE_EMPTY = "Phone must not be empty!";
     private static final String INVALID_PHONE_NUMBER = "Invalid phone number!";
-    public static final String SUCCESSFULLY_EDITED_PASSWORD = "Successfully edited password";
+    private static final String SUCCESSFULLY_EDITED_PASSWORD = "Successfully edited password";
     private static final String PHONE_REGEX = "(\\+)?(359|0)8[789]\\d{1}\\d{3}\\d{3}";
 
     private final UserRepository userRepository;
@@ -45,8 +45,8 @@ public class UserService {
 
     private final JwtTokenUtil jwtTokenUtil;
 
-    @Value("${picture.url}")
-    private String pictureUrl;
+    @Value("${picture.url.user}")
+    private String pictureUserUrl;
 
     @Autowired
     public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, ModelMapper modelMapper,
@@ -154,7 +154,7 @@ public class UserService {
     }
 
     public String getUserPictureUrl(User user) {
-        return user.getImage() != null ? pictureUrl + user.getUid() : null;
+        return user.getImage() != null ? pictureUserUrl + user.getUid() : null;
     }
 
     public String editPassword(EditPasswordRequest editPasswordRequest, String userId) {

@@ -1,7 +1,6 @@
 package unwe.register.UnweRegister.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +23,8 @@ public class UserController {
 
     @PostMapping("/checkLogged")
     @PreAuthorize("hasRole('EMPLOYER') or hasRole('COORDINATOR')")
-    public void checkIfLogged() {}
+    public void checkIfLogged() {
+    }
 
     @PostMapping("/login")
     @PreAuthorize("permitAll()")
@@ -50,12 +50,6 @@ public class UserController {
                                                         @RequestAttribute("userId") String userId) throws IOException {
         return ResponseEntity.ok(userService.editProfile(
                 new UserEditPersonalInfoRequest(email, firstName, lastName, phone, address, contactPerson), multipartFile, userId));
-    }
-
-    @GetMapping(value = "/{userId}", produces = MediaType.IMAGE_JPEG_VALUE)
-    @PreAuthorize("permitAll()")
-    public ResponseEntity<byte[]> getUserProfilePicture(@PathVariable("userId") String userId) {
-        return ResponseEntity.ok(userService.getUserPicture(userId));
     }
 
     @PutMapping("/password")
