@@ -1,9 +1,8 @@
-package unwe.register.UnweRegister.controllers;
+package unwe.register.UnweRegister.dtos.events;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import unwe.register.UnweRegister.dtos.events.EventResponse;
 
 import java.util.List;
 

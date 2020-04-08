@@ -28,6 +28,6 @@ public class ActivityPlan {
     @NonNull
     private String description;
 
-    @OneToMany(mappedBy = "activityPlan")
+    @OneToMany(mappedBy = "activityPlan", cascade = CascadeType.ALL)
     private List<Event> events;
 }

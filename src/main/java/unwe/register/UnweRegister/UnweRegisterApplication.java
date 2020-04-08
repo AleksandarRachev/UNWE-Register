@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class UnweRegisterApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(UnweRegisterApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(UnweRegisterApplication.class, args);
+    }
 
 }

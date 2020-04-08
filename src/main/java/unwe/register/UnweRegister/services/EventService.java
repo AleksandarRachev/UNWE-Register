@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import unwe.register.UnweRegister.controllers.EventCatalogResponse;
+import unwe.register.UnweRegister.dtos.events.EventCatalogResponse;
 import unwe.register.UnweRegister.dtos.events.EventResponse;
 import unwe.register.UnweRegister.entities.ActivityPlan;
 import unwe.register.UnweRegister.entities.Event;
@@ -32,6 +32,8 @@ public class EventService {
     private static final int DESCRIPTION_MAX_SYMBOLS = 2000;
     private static final String TITLE_TOO_LONG = "Title must not be more than 200 symbols!";
     private static final int TITLE_MAX_SYMBOLS = 250;
+    private static final String YOU_CANNOT_DELETE_THIS_EVENT = "You cannot delete this event!";
+    private static final String SUCCESS_DELETE = "You successfully deleted the event!";
 
     private final EventRepository eventRepository;
 
@@ -111,5 +113,15 @@ public class EventService {
                 .collect(Collectors.toList());
 
         return new EventCatalogResponse(events, eventRepository.count());
+    }
+
+    public String deleteEvent(String eventId, String userId) {
+        Event event = getEvent(eventId);
+
+        if (!event.getActivityPlan().getAgreement().getEmployer().getUid().equals(userId)) {
+            throw new InvalidOperationException(YOU_CANNOT_DELETE_THIS_EVENT);
+        }
+        eventRepository.delete(event);
+        return SUCCESS_DELETE;
     }
 }

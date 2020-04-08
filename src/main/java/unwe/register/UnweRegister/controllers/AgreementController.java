@@ -50,7 +50,7 @@ public class AgreementController {
     @PreAuthorize("hasRole('COORDINATOR')")
     public ResponseEntity<String> deleteAgreement(@PathVariable("agreementId") String agreementId,
                                                   @RequestAttribute("userId") String coordinatorId) {
-        return ResponseEntity.ok(agreementService.deleteAgreement(agreementId));
+        return ResponseEntity.ok(agreementService.deleteAgreement(agreementId, coordinatorId));
     }
 
 }

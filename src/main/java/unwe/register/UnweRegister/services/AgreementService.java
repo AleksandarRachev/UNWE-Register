@@ -24,6 +24,7 @@ public class AgreementService {
     private static final String AGREEMENT_NOT_FOUND = "Agreement not found";
     private static final String UNABLE_TO_EDIT = "You cannot edit this agreement!";
     private static final String AGREEMENT_DELETED_SUCCESSFULLY = "Agreement deleted successfully";
+    private static final String YOU_CANNOT_DELETE_THIS_AGREEMENT = "You cannot delete this agreement!";
 
     private final AgreementRepository agreementRepository;
 
@@ -74,7 +75,7 @@ public class AgreementService {
         Agreement agreement = getAgreementById(editagreementRequest.getUid());
         User coordinator = userService.getUser(coordinatorId);
 
-        if(!agreement.getCoordinator().getUid().equals(coordinatorId)){
+        if (!agreement.getCoordinator().getUid().equals(coordinatorId)) {
             throw new InvalidOperationException(UNABLE_TO_EDIT);
         }
 
@@ -89,8 +90,13 @@ public class AgreementService {
         return modelMapper.map(agreementRepository.save(agreement), AgreementResponse.class);
     }
 
-    public String deleteAgreement(String agreementId) {
+    public String deleteAgreement(String agreementId, String coordinatorId) {
         Agreement agreement = getAgreementById(agreementId);
+
+        if (!agreement.getCoordinator().getUid().equals(coordinatorId)) {
+            throw new InvalidOperationException(YOU_CANNOT_DELETE_THIS_AGREEMENT);
+        }
+
         agreementRepository.delete(agreement);
         return AGREEMENT_DELETED_SUCCESSFULLY;
     }

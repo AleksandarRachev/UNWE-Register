@@ -27,7 +27,7 @@ public class ImageController {
 
     @GetMapping(value = "/event/{eventId}", produces = MediaType.IMAGE_JPEG_VALUE)
     @PreAuthorize("permitAll()")
-    public ResponseEntity<byte[]> getEventPicture(@PathVariable("eventId") String eventId){
+    public ResponseEntity<byte[]> getEventPicture(@PathVariable("eventId") String eventId) {
         return ResponseEntity.ok(eventService.getEventPicture(eventId));
     }
 }

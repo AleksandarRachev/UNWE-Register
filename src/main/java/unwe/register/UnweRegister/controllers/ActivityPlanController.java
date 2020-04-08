@@ -43,7 +43,8 @@ public class ActivityPlanController {
 
     @DeleteMapping("/{activityPlanId}")
     @PreAuthorize("hasRole('COORDINATOR')")
-    public ResponseEntity<String> deleteActivityPlan(@PathVariable("activityPlanId") String activityPlanId) {
-        return ResponseEntity.ok(activityPlanService.deleteActivityPlan(activityPlanId));
+    public ResponseEntity<String> deleteActivityPlan(@PathVariable("activityPlanId") String activityPlanId,
+                                                     @RequestAttribute("userId") String userId) {
+        return ResponseEntity.ok(activityPlanService.deleteActivityPlan(activityPlanId, userId));
     }
 }

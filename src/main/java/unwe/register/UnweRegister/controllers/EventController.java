@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import unwe.register.UnweRegister.dtos.events.EventCatalogResponse;
 import unwe.register.UnweRegister.dtos.events.EventResponse;
 import unwe.register.UnweRegister.services.EventService;
 
@@ -34,4 +35,10 @@ public class EventController {
         return ResponseEntity.ok(eventService.getEvents(page));
     }
 
+    @DeleteMapping("/{eventId}")
+    @PreAuthorize("hasRole('EMPLOYER')")
+    public ResponseEntity<String> deleteEvent(@PathVariable("eventId") String eventId,
+                                              @RequestAttribute("userId") String userId) {
+        return ResponseEntity.ok(eventService.deleteEvent(eventId, userId));
+    }
 }

@@ -10,6 +10,7 @@ import unwe.register.UnweRegister.dtos.activityPlan.ActivityPlansCatalogResponse
 import unwe.register.UnweRegister.entities.ActivityPlan;
 import unwe.register.UnweRegister.entities.Agreement;
 import unwe.register.UnweRegister.exceptions.ElementNotPresentException;
+import unwe.register.UnweRegister.exceptions.InvalidOperationException;
 import unwe.register.UnweRegister.repositories.ActivityPlanRepository;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class ActivityPlanService {
     private static final int ELEMENTS_PER_PAGE = 10;
     private static final String SUCCESS_DELETE = "Activity plan deleted successfully!";
     private static final String ACTIVITY_PLAN_NOT_FOUND = "Activity plan not found!";
+    private static final String YOU_CANNOT_DELETE_THIS_ACTIVITY_PLAN = "You cannot delete this activity plan!";
 
     private final ActivityPlanRepository activityPlanRepository;
 
@@ -53,9 +55,13 @@ public class ActivityPlanService {
         return new ActivityPlansCatalogResponse(activityPlans, activityPlanRepository.count());
     }
 
-    public String deleteActivityPlan(String activityPlanId) {
+    public String deleteActivityPlan(String activityPlanId, String userId) {
         ActivityPlan activityPlan = activityPlanRepository.findById(activityPlanId)
                 .orElseThrow(() -> new ElementNotPresentException(ACTIVITY_PLAN_NOT_FOUND));
+
+        if (!activityPlan.getAgreement().getCoordinator().getUid().equals(userId)) {
+            throw new InvalidOperationException(YOU_CANNOT_DELETE_THIS_ACTIVITY_PLAN);
+        }
 
         activityPlanRepository.delete(activityPlan);
         return SUCCESS_DELETE;
