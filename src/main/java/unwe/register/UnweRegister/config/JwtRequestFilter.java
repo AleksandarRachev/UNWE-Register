@@ -89,24 +89,11 @@ public class JwtRequestFilter extends OncePerRequestFilter {
     }
 
     private boolean isPathPermitted(HttpServletRequest request) {
-        return isImagePathPermitted(request) || isPermitted(request) || isUserPathPermitted(request);
-    }
-
-    private boolean isImagePathPermitted(HttpServletRequest request) {
-        return (request.getMethod().equalsIgnoreCase("get")
-                && request.getServletPath().startsWith("/images"));
-    }
-
-    //custom method for filtering
-    private boolean isPermitted(HttpServletRequest request) {
-        String servletPath = request.getServletPath();
-        return servletPath.startsWith("/webjars/springfox-swagger-ui/");
-    }
-
-    private boolean isUserPathPermitted(HttpServletRequest request) {
         return (request.getMethod().equalsIgnoreCase("post") && request.getServletPath().equals("/users/login"))
                 || (request.getMethod().equalsIgnoreCase("post") && request.getServletPath().equals("/users"))
                 || (request.getMethod().equalsIgnoreCase("get") && request.getServletPath().equals("/events"))
-                || (request.getMethod().equalsIgnoreCase("get") && request.getServletPath().equals("/departments"));
+                || (request.getMethod().equalsIgnoreCase("get") && request.getServletPath().equals("/departments"))
+                || (request.getMethod().equalsIgnoreCase("get") && request.getServletPath().startsWith("/images"))
+                || (request.getMethod().equalsIgnoreCase("get") && request.getServletPath().matches("/agreements/pdf/.*"));
     }
 }

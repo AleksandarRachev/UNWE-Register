@@ -24,3 +24,7 @@ picture:
     user: http://localhost:8070/images/user/
     event: http://localhost:8070/images/event/
 
+pdf:
+  agreement:
+    url: http://localhost:8070/agreements/pdf/
+

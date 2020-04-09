@@ -29,4 +29,6 @@ public class AgreementResponse {
 
     private Long number;
 
+    private String pdfUrl;
+
 }

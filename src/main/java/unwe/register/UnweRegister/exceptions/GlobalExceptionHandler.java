@@ -11,7 +11,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler({FieldMissingException.class, ElementAlreadyExistsException.class, FieldValidationException.class,
-            PasswordsNotMatchingException.class, WrongCredentialsException.class, InvalidOperationException.class})
+            PasswordsNotMatchingException.class, WrongCredentialsException.class, InvalidOperationException.class,
+            UnsupportedFileFormat.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<ErrorMessage> handleBadRequest(Exception e) {
         return new ResponseEntity<>(new ErrorMessage(e.getMessage()), HttpStatus.BAD_REQUEST);

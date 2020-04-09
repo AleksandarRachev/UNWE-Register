@@ -32,11 +32,16 @@ public class Agreement {
     @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false, length = 2000)
+    @Column(nullable = false, length = 2500)
     private String description;
 
     @Column(nullable = false)
     private Long number;
+
+    @Lob
+    private byte[] document;
+
+    private String documentExtension;
 
     @OneToMany(mappedBy = "agreement", cascade = CascadeType.ALL)
     private List<ActivityPlan> activityPlans;
