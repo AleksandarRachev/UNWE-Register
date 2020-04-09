@@ -24,7 +24,7 @@ public class AgreementRequest {
     private String title;
 
     @NotBlank(message = "Description must not be empty!")
-    @Size(max = 2000, message = "Description must not be more than 2000 symbols!")
+    @Size(max = 2500, message = "Description must not be more than 2500 symbols!")
     private String description;
 
 }

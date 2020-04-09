@@ -2,6 +2,7 @@ package unwe.register.UnweRegister.controllers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -42,9 +43,15 @@ public class AgreementController {
     }
 
     @PutMapping
-    public ResponseEntity<AgreementResponse> editAgreement(@Valid @RequestBody EditAgreementRequest editagreementRequest,
-                                                           @RequestAttribute("userId") String userId) {
-        return ResponseEntity.ok(agreementService.editAgreement(editagreementRequest, userId));
+    public ResponseEntity<AgreementResponse> editAgreement(@RequestParam("uid") String uid,
+                                                           @RequestParam("employerId") String employerId,
+                                                           @RequestParam("date") Long date,
+                                                           @RequestParam("title") String title,
+                                                           @RequestParam("description") String description,
+                                                           @RequestPart(value = "document", required = false) MultipartFile document,
+                                                           @RequestAttribute("userId") String userId) throws IOException {
+        return ResponseEntity.ok(agreementService.editAgreement(
+                new EditAgreementRequest(uid, employerId, date, title, description), document, userId));
     }
 
     @GetMapping
@@ -70,6 +77,7 @@ public class AgreementController {
         return ResponseEntity.ok().header(HttpHeaders.CONTENT_DISPOSITION,
                 "inline; filename=\"" + AGREEMENTS_DOCUMENT_TITLE + LocalDateTime.now(ZoneId.of("GMT+2")) +
                         documentInfo.getExtension() + "\"")
+                .contentType(MediaType.MULTIPART_FORM_DATA)
                 .body(documentInfo.getDocument());
     }
 }

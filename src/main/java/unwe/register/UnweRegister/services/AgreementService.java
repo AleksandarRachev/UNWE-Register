@@ -42,8 +42,9 @@ public class AgreementService {
     private static final int DESC_SYMBOLS = 2500;
     private static final int TITLE_SYMBOLS = 250;
     private static final String TITLE_MUST_NOT_BE_EMPTY = "Title must not be empty!";
-    private static final String TITLE_TOO_LONG = "Title must not be more than 200 symbols!";
+    private static final String TITLE_TOO_LONG = "Title must not be more than 250 symbols!";
     private static final String DOCUMENT_NOT_FOUND = "This agreement doesn't have attached document!";
+    private static final String AGREEMENT_ID_MISSING = "Agreement id missing!";
     private List<String> validExtensions = Arrays.asList("pdf", "doc", "docx", "odt", "tex", "txt", "wpd");
 
     private final AgreementRepository agreementRepository;
@@ -107,7 +108,6 @@ public class AgreementService {
                 throw new InvalidOperationException(TITLE_TOO_LONG);
             }
         }
-
     }
 
     private void validateFile(MultipartFile file) {
@@ -135,15 +135,20 @@ public class AgreementService {
     public AgreementsCatalogResponse getAllAgreements(int page) {
         List<AgreementResponse> agreements = agreementRepository.findAllByOrderByDateDesc(PageRequest.of(page, ELEMENTS_PER_PAGE))
                 .stream()
-                .map(agreement -> modelMapper.map(agreement, AgreementResponse.class))
+                .map(agreement -> {
+                    AgreementResponse agreementResponse = modelMapper.map(agreement, AgreementResponse.class);
+                    agreementResponse.setPdfUrl(agreementPdfUrl + agreement.getUid());
+                    return agreementResponse;
+                })
                 .collect(Collectors.toList());
 
         return new AgreementsCatalogResponse(agreements, agreementRepository.count());
     }
 
     public AgreementResponse getAgreementInfo(String agreementId) {
-        return modelMapper.map(getAgreementById(agreementId),
-                AgreementResponse.class);
+        AgreementResponse agreementResponse = modelMapper.map(getAgreementById(agreementId), AgreementResponse.class);
+        agreementResponse.setPdfUrl(agreementPdfUrl + agreementId);
+        return agreementResponse;
     }
 
     private Agreement getAgreementById(String agreementId) {
@@ -151,13 +156,15 @@ public class AgreementService {
                 .orElseThrow(() -> new ElementNotPresentException(AGREEMENT_NOT_FOUND));
     }
 
-    public AgreementResponse editAgreement(EditAgreementRequest editagreementRequest, String coordinatorId) {
+    public AgreementResponse editAgreement(EditAgreementRequest editagreementRequest, MultipartFile document, String coordinatorId) throws IOException {
         Agreement agreement = getAgreementById(editagreementRequest.getUid());
         User coordinator = userService.getUser(coordinatorId);
 
         if (!agreement.getCoordinator().getUid().equals(coordinatorId)) {
             throw new InvalidOperationException(UNABLE_TO_EDIT);
         }
+
+        validateEditAgreementFields(editagreementRequest);
 
         User employer = userService.getUser(editagreementRequest.getEmployerId());
 
@@ -166,8 +173,43 @@ public class AgreementService {
         agreement.setDate(editagreementRequest.getDate());
         agreement.setEmployer(employer);
         agreement.setCoordinator(coordinator);
+        if (document != null) {
+            validateFile(document);
+            agreement.setDocument(document.getBytes());
+            agreement.setDocumentExtension("." + getExtension(document));
+        }
 
         return modelMapper.map(agreementRepository.save(agreement), AgreementResponse.class);
+    }
+
+    private void validateEditAgreementFields(EditAgreementRequest editagreementRequest) {
+        if (editagreementRequest.getUid().isBlank()) {
+            throw new FieldMissingException(AGREEMENT_ID_MISSING);
+        }
+
+        if (editagreementRequest.getEmployerId().isBlank()) {
+            throw new FieldMissingException(EMPLOYER_NOT_SELECTED);
+        }
+
+        if (editagreementRequest.getDate() == null) {
+            throw new FieldMissingException(DATE_OF_AGREEMENT_NOT_SELECTED);
+        }
+
+        if (editagreementRequest.getDescription().isBlank()) {
+            throw new FieldMissingException(DESCRIPTION_MUST_NOT_BE_EMPTY);
+        } else {
+            if (editagreementRequest.getDescription().length() > DESC_SYMBOLS) {
+                throw new InvalidOperationException(DESCRIPTION_TOO_LONG);
+            }
+        }
+
+        if (editagreementRequest.getTitle().isBlank()) {
+            throw new FieldMissingException(TITLE_MUST_NOT_BE_EMPTY);
+        } else {
+            if (editagreementRequest.getTitle().length() > TITLE_SYMBOLS) {
+                throw new InvalidOperationException(TITLE_TOO_LONG);
+            }
+        }
     }
 
     public String deleteAgreement(String agreementId, String coordinatorId) {
@@ -189,7 +231,7 @@ public class AgreementService {
     public DocumentInfo getDocument(String agreementId) {
         Agreement agreement = getAgreementById(agreementId);
 
-        if(agreement.getDocument() == null){
+        if (agreement.getDocument() == null) {
             throw new ElementNotPresentException(DOCUMENT_NOT_FOUND);
         }
 

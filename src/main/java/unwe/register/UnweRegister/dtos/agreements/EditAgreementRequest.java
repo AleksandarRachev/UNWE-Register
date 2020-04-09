@@ -23,11 +23,11 @@ public class EditAgreementRequest {
     private Long date;
 
     @NotBlank(message = "Title must not be empty!")
-    @Size(max = 200, message = "Title must not be more than 200 symbols!")
+    @Size(max = 250, message = "Title must not be more than 250 symbols!")
     private String title;
 
     @NotBlank(message = "Description must not be empty!")
-    @Size(max = 2000, message = "Description must not be more than 2000 symbols!")
+    @Size(max = 2500, message = "Description must not be more than 2500 symbols!")
     private String description;
 
 }
