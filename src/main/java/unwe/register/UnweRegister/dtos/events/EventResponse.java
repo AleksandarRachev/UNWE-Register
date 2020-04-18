@@ -15,7 +15,7 @@ public class EventResponse {
 
     private String description;
 
-    private String activityPlanId;
+    private String activityPlanUid;
 
     private String imageUrl;
 

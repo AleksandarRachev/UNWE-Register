@@ -47,7 +47,7 @@ public class Agreement {
     private List<ActivityPlan> activityPlans;
 
     @PrePersist
-    public void onCreate() {
+    private void onCreate() {
         this.number = System.currentTimeMillis();
     }
 

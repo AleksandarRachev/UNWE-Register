@@ -34,6 +34,7 @@ public class EventService {
     private static final int TITLE_MAX_SYMBOLS = 250;
     private static final String YOU_CANNOT_DELETE_THIS_EVENT = "You cannot delete this event!";
     private static final String SUCCESS_DELETE = "You successfully deleted the event!";
+    private static final String YOU_CANNOT_EDIT_THIS_EVENT = "You cannot edit this event!";
 
     private final EventRepository eventRepository;
 
@@ -64,8 +65,8 @@ public class EventService {
         }
 
         EventResponse eventResponse = modelMapper.map(eventRepository.save(event), EventResponse.class);
-
         eventResponse.setImageUrl(eventImageUrl + event.getUid());
+
         return eventResponse;
     }
 
@@ -101,7 +102,7 @@ public class EventService {
     }
 
     public EventCatalogResponse getEvents(int page) {
-        List<EventResponse> events = eventRepository.findAll(PageRequest.of(page, EVENTS_PER_PAGE))
+        List<EventResponse> events = eventRepository.findAllByOrderByMadeOnDesc(PageRequest.of(page, EVENTS_PER_PAGE))
                 .stream()
                 .map(event -> {
                     EventResponse eventResponse = modelMapper.map(event, EventResponse.class);
@@ -123,5 +124,35 @@ public class EventService {
         }
         eventRepository.delete(event);
         return SUCCESS_DELETE;
+    }
+
+    public EventResponse editEvent(String title, String description, String activityPlanId, String eventId,
+                                   MultipartFile multipartFile, String userId) throws IOException {
+        Event event = getEvent(eventId);
+
+        if (!event.getActivityPlan().getAgreement().getEmployer().getUid().equals(userId)) {
+            throw new InvalidOperationException(YOU_CANNOT_EDIT_THIS_EVENT);
+        }
+
+        ActivityPlan activityPlan = activityPlanService.getActivityPlan(activityPlanId);
+
+        validateAddEventData(title, description, userId, activityPlan);
+
+        event.setActivityPlan(activityPlan);
+        event.setTitle(title);
+        event.setDescription(description);
+
+        if (multipartFile != null) {
+            event.setImage(multipartFile.getBytes());
+        }
+
+        EventResponse eventResponse = modelMapper.map(eventRepository.save(event), EventResponse.class);
+        eventResponse.setImageUrl(eventImageUrl + event.getUid());
+
+        return eventResponse;
+    }
+
+    public EventResponse getEventById(String eventId) {
+        return modelMapper.map(getEvent(eventId), EventResponse.class);
     }
 }

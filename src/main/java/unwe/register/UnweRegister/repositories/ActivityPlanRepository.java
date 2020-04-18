@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface ActivityPlanRepository extends JpaRepository<ActivityPlan, String> {
 
-    List<ActivityPlan> findAllByAgreementEmployerUid(Pageable pageable, String userId);
+    List<ActivityPlan> findAllByAgreementEmployerUidOrderByMadeOnDesc(Pageable pageable, String userId);
 
     Long countByAgreementEmployerUid(String userId);
 

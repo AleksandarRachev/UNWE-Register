@@ -30,4 +30,11 @@ public class ActivityPlan {
 
     @OneToMany(mappedBy = "activityPlan", cascade = CascadeType.ALL)
     private List<Event> events;
+
+    private Long madeOn;
+
+    @PrePersist
+    private void onCreate() {
+        this.madeOn = System.currentTimeMillis();
+    }
 }

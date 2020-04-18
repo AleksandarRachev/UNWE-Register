@@ -33,4 +33,11 @@ public class Event {
 
     @Lob
     private byte[] image;
+
+    private Long madeOn;
+
+    @PrePersist
+    private void onCreate() {
+        this.madeOn = System.currentTimeMillis();
+    }
 }

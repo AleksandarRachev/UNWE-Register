@@ -74,7 +74,7 @@ public class ActivityPlanService {
     }
 
     public ActivityPlansCatalogResponse getActivityPlansForUser(int page, String userId) {
-        List<ActivityPlanResponse> activityPlans = activityPlanRepository.findAllByAgreementEmployerUid(PageRequest.of(page, ELEMENTS_PER_PAGE), userId)
+        List<ActivityPlanResponse> activityPlans = activityPlanRepository.findAllByAgreementEmployerUidOrderByMadeOnDesc(PageRequest.of(page, ELEMENTS_PER_PAGE), userId)
                 .stream()
                 .map(activityPlan -> modelMapper.map(activityPlan, ActivityPlanResponse.class))
                 .collect(Collectors.toList());
