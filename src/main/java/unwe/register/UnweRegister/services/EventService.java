@@ -101,8 +101,8 @@ public class EventService {
         return getEvent(eventId).getImage();
     }
 
-    public EventCatalogResponse getEvents(int page) {
-        List<EventResponse> events = eventRepository.findAllByOrderByMadeOnDesc(PageRequest.of(page, EVENTS_PER_PAGE))
+    public EventCatalogResponse getEvents(int page, String search) {
+        List<EventResponse> events = eventRepository.findAllByTitleContainingOrderByMadeOnDesc(PageRequest.of(page, EVENTS_PER_PAGE), search)
                 .stream()
                 .map(event -> {
                     EventResponse eventResponse = modelMapper.map(event, EventResponse.class);
@@ -113,7 +113,7 @@ public class EventService {
                 })
                 .collect(Collectors.toList());
 
-        return new EventCatalogResponse(events, eventRepository.count());
+        return new EventCatalogResponse(events, eventRepository.countByTitleContaining(search));
     }
 
     public String deleteEvent(String eventId, String userId) {
