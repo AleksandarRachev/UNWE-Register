@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import unwe.register.UnweRegister.dtos.activityPlan.ActivityPlanRequest;
 import unwe.register.UnweRegister.dtos.activityPlan.ActivityPlanResponse;
 import unwe.register.UnweRegister.dtos.activityPlan.ActivityPlansCatalogResponse;
+import unwe.register.UnweRegister.dtos.activityPlan.EditActivityPlanRequest;
 import unwe.register.UnweRegister.services.ActivityPlanService;
 
 import javax.validation.Valid;
@@ -26,6 +27,17 @@ public class ActivityPlanController {
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(activityPlanService.addActivityPlan(activityPlanRequest));
+    }
+
+    @PutMapping
+    @PreAuthorize("hasRole('COORDINATOR')")
+    public ResponseEntity<ActivityPlanResponse> editActivityPlan(@Valid @RequestBody EditActivityPlanRequest editActivityPlanRequest) {
+        return ResponseEntity.ok(activityPlanService.editActivityPlan(editActivityPlanRequest));
+    }
+
+    @GetMapping("/{activityPlanId}")
+    public ResponseEntity<ActivityPlanResponse> getActivityPlanById(@PathVariable("activityPlanId") String activityPlanId) {
+        return ResponseEntity.ok(activityPlanService.getActivityPlanById(activityPlanId));
     }
 
     @GetMapping

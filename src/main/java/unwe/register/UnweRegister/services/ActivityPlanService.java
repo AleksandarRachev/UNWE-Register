@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import unwe.register.UnweRegister.dtos.activityPlan.ActivityPlanRequest;
 import unwe.register.UnweRegister.dtos.activityPlan.ActivityPlanResponse;
 import unwe.register.UnweRegister.dtos.activityPlan.ActivityPlansCatalogResponse;
+import unwe.register.UnweRegister.dtos.activityPlan.EditActivityPlanRequest;
 import unwe.register.UnweRegister.entities.ActivityPlan;
 import unwe.register.UnweRegister.entities.Agreement;
 import unwe.register.UnweRegister.exceptions.ElementNotPresentException;
@@ -78,5 +79,20 @@ public class ActivityPlanService {
                 .map(activityPlan -> modelMapper.map(activityPlan, ActivityPlanResponse.class))
                 .collect(Collectors.toList());
         return new ActivityPlansCatalogResponse(activityPlans, activityPlanRepository.countByAgreementEmployerUid(userId));
+    }
+
+    public ActivityPlanResponse editActivityPlan(EditActivityPlanRequest editActivityPlanRequest) {
+        ActivityPlan activityPlan = getActivityPlan(editActivityPlanRequest.getUid());
+
+        Agreement agreement = agreementService.getAgreementByNumber(editActivityPlanRequest.getAgreementNumber());
+
+        activityPlan.setDescription(editActivityPlanRequest.getDescription());
+        activityPlan.setAgreement(agreement);
+
+        return modelMapper.map(activityPlanRepository.save(activityPlan), ActivityPlanResponse.class);
+    }
+
+    public ActivityPlanResponse getActivityPlanById(String activityPlanId) {
+        return modelMapper.map(getActivityPlan(activityPlanId), ActivityPlanResponse.class);
     }
 }

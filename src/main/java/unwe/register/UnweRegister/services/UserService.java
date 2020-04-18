@@ -124,7 +124,9 @@ public class UserService {
         if (multipartFile != null) {
             user.setImage(multipartFile.getBytes());
         }
-        return modelMapper.map(userRepository.save(user), UserResponse.class);
+        UserResponse userResponse = modelMapper.map(userRepository.save(user), UserResponse.class);
+        userResponse.setImageUrl(pictureUserUrl + userId);
+        return userResponse;
     }
 
     private void validateEditUserMandatoryFields(UserEditPersonalInfoRequest userEdit) {
