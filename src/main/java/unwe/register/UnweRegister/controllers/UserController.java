@@ -40,16 +40,19 @@ public class UserController {
 
     @PutMapping
     @PreAuthorize("hasRole('EMPLOYER') or hasRole('COORDINATOR')")
-    public ResponseEntity<UserResponse> editUserProfile(@RequestPart(value = "image", required = false) MultipartFile multipartFile,
-                                                        @RequestParam("email") String email,
-                                                        @RequestParam("firstName") String firstName,
-                                                        @RequestParam("lastName") String lastName,
-                                                        @RequestParam("phone") String phone,
-                                                        @RequestParam(value = "address", required = false) String address,
-                                                        @RequestParam(value = "contactPerson", required = false) String contactPerson,
-                                                        @RequestAttribute("userId") String userId) throws IOException {
+    public ResponseEntity<UserResponse> editUserProfile(
+            @RequestPart(value = "image", required = false) MultipartFile multipartFile,
+            @RequestParam("email") String email,
+            @RequestParam("firstName") String firstName,
+            @RequestParam("lastName") String lastName,
+            @RequestParam("phone") String phone,
+            @RequestParam(value = "address", required = false) String address,
+            @RequestParam(value = "contactPerson", required = false) String contactPerson,
+            @RequestParam(value = "companyName", required = false, defaultValue = "") String companyName,
+            @RequestAttribute("userId") String userId) throws IOException {
         return ResponseEntity.ok(userService.editProfile(
-                new UserEditPersonalInfoRequest(email, firstName, lastName, phone, address, contactPerson), multipartFile, userId));
+                new UserEditPersonalInfoRequest(email, firstName, lastName, phone, address, contactPerson, companyName),
+                multipartFile, userId));
     }
 
     @PutMapping("/password")

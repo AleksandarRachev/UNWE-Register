@@ -26,6 +26,8 @@ public class UserResponse {
 
     private String contactPerson;
 
+    private String companyName;
+
     private String imageUrl;
 
 }

@@ -10,7 +10,8 @@ import java.util.List;
 @Repository
 public interface EventRepository extends JpaRepository<Event, String> {
 
-    List<Event> findAllByTitleContainingOrderByMadeOnDesc(Pageable pageable, String title);
+    List<Event> findAllByTitleContainingOrActivityPlanAgreementEmployerCompanyNameContainingOrderByMadeOnDesc(
+            Pageable pageable, String title, String companyName);
 
     long countByTitleContaining(String title);
 

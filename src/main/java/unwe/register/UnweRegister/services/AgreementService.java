@@ -137,7 +137,7 @@ public class AgreementService {
                 .stream()
                 .map(agreement -> {
                     AgreementResponse agreementResponse = modelMapper.map(agreement, AgreementResponse.class);
-                    agreementResponse.setPdfUrl(agreementPdfUrl + agreement.getUid());
+                    agreementResponse.setPdfUrl(agreement.getDocument() == null ? "" : agreementPdfUrl + agreement.getUid());
                     return agreementResponse;
                 })
                 .collect(Collectors.toList());

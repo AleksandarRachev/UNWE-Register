@@ -29,4 +29,6 @@ public class UserEditPersonalInfoRequest {
     private String address;
 
     private String contactPerson;
+
+    private String companyName;
 }

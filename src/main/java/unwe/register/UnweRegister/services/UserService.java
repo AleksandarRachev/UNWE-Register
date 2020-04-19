@@ -34,6 +34,7 @@ public class UserService {
     private static final String INVALID_PHONE_NUMBER = "Invalid phone number!";
     private static final String SUCCESSFULLY_EDITED_PASSWORD = "Successfully edited password";
     private static final String PHONE_REGEX = "(\\+)?(359|0)8[789]\\d{1}\\d{3}\\d{3}";
+    private static final String COMPANY_NAME_MISSING = "Company name missing!";
 
     private final UserRepository userRepository;
 
@@ -61,7 +62,7 @@ public class UserService {
     private UserLoginResponse getUserRegisterResponse(UserAuthenticationRequest userAuthenticationRequest, User user) {
         UserResponse userLogin = new UserResponse(user.getUid(), user.getEmail(), user.getFirstName(),
                 user.getLastName(), user.getPhone(), user.getRole(), user.getAddress(), user.getContactPerson(),
-                getUserPictureUrl(user));
+                user.getCompanyName(), getUserPictureUrl(user));
 
         final UserDetails userDetails = jwtUserDetailsService.loadUserByUsername(userAuthenticationRequest.getEmail());
         return new UserLoginResponse(jwtTokenUtil.generateToken(userDetails), userLogin);
@@ -97,6 +98,11 @@ public class UserService {
     }
 
     private void validateRegisterInfo(UserRegisterRequest userRegisterRequest) {
+        if (userRegisterRequest.getDepartmentId() == null) {
+            if (userRegisterRequest.getCompanyName().isBlank()) {
+                throw new FieldMissingException(COMPANY_NAME_MISSING);
+            }
+        }
         if (userRepository.findByEmail(userRegisterRequest.getEmail()).isPresent()) {
             throw new ElementAlreadyExistsException(EMAIL_TAKEN);
         }
@@ -114,13 +120,14 @@ public class UserService {
                                     String userId) throws IOException {
         User user = getUser(userId);
 
-        validateEditUserMandatoryFields(userEdit);
+        validateEditUserMandatoryFields(userEdit, user);
 
         user.setEmail(userEdit.getEmail());
         user.setFirstName(userEdit.getFirstName());
         user.setLastName(userEdit.getLastName());
         user.setAddress(userEdit.getAddress());
         user.setContactPerson(userEdit.getContactPerson());
+        user.setCompanyName(userEdit.getCompanyName());
         if (multipartFile != null) {
             user.setImage(multipartFile.getBytes());
         }
@@ -129,7 +136,12 @@ public class UserService {
         return userResponse;
     }
 
-    private void validateEditUserMandatoryFields(UserEditPersonalInfoRequest userEdit) {
+    private void validateEditUserMandatoryFields(UserEditPersonalInfoRequest userEdit, User user) {
+        if (user.getRole() == Role.EMPLOYER) {
+            if (userEdit.getCompanyName().isBlank()) {
+                throw new FieldMissingException(COMPANY_NAME_MISSING);
+            }
+        }
         if (userEdit.getEmail().isBlank()) {
             throw new FieldMissingException(EMAIL_MUST_NOT_BE_EMPTY);
         }

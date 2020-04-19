@@ -102,7 +102,9 @@ public class EventService {
     }
 
     public EventCatalogResponse getEvents(int page, String search) {
-        List<EventResponse> events = eventRepository.findAllByTitleContainingOrderByMadeOnDesc(PageRequest.of(page, EVENTS_PER_PAGE), search)
+        List<EventResponse> events = eventRepository
+                .findAllByTitleContainingOrActivityPlanAgreementEmployerCompanyNameContainingOrderByMadeOnDesc(
+                        PageRequest.of(page, EVENTS_PER_PAGE), search, search)
                 .stream()
                 .map(event -> {
                     EventResponse eventResponse = modelMapper.map(event, EventResponse.class);

@@ -21,29 +21,32 @@ public class EventController {
 
     @PostMapping
     @PreAuthorize("hasRole('EMPLOYER')")
-    public ResponseEntity<EventResponse> addEvent(@RequestPart(value = "image", required = false) MultipartFile multipartFile,
-                                                  @RequestParam("title") String title,
-                                                  @RequestParam("description") String description,
-                                                  @RequestParam("activityPlanId") String activityPlanId,
-                                                  @RequestAttribute("userId") String userId) throws IOException {
+    public ResponseEntity<EventResponse> addEvent(
+            @RequestPart(value = "image", required = false) MultipartFile multipartFile,
+            @RequestParam("title") String title,
+            @RequestParam("description") String description,
+            @RequestParam("activityPlanId") String activityPlanId,
+            @RequestAttribute("userId") String userId) throws IOException {
         return ResponseEntity.ok(eventService.addEvent(title, description, activityPlanId, multipartFile, userId));
     }
 
     @PutMapping
     @PreAuthorize("hasRole('EMPLOYER')")
-    public ResponseEntity<EventResponse> editEvent(@RequestPart(value = "image", required = false) MultipartFile multipartFile,
-                                                   @RequestParam("title") String title,
-                                                   @RequestParam("description") String description,
-                                                   @RequestParam("activityPlanId") String activityPlanId,
-                                                   @RequestParam("eventId") String eventId,
-                                                   @RequestAttribute("userId") String userId) throws IOException {
+    public ResponseEntity<EventResponse> editEvent(
+            @RequestPart(value = "image", required = false) MultipartFile multipartFile,
+            @RequestParam("title") String title,
+            @RequestParam("description") String description,
+            @RequestParam("activityPlanId") String activityPlanId,
+            @RequestParam("eventId") String eventId,
+            @RequestAttribute("userId") String userId) throws IOException {
         return ResponseEntity.ok(eventService.editEvent(title, description, activityPlanId, eventId, multipartFile, userId));
     }
 
     @GetMapping
     @PreAuthorize("permitAll()")
-    public ResponseEntity<EventCatalogResponse> getAllEvents(@RequestParam("page") int page,
-                                                             @RequestParam(value = "search", required = false, defaultValue = "") String search) {
+    public ResponseEntity<EventCatalogResponse> getAllEvents(
+            @RequestParam("page") int page,
+            @RequestParam(value = "search", required = false, defaultValue = "") String search) {
         return ResponseEntity.ok(eventService.getEvents(page, search));
     }
 
