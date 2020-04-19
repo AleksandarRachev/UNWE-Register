@@ -14,7 +14,6 @@ import unwe.register.UnweRegister.dtos.agreements.EditAgreementRequest;
 import unwe.register.UnweRegister.dtos.docments.DocumentInfo;
 import unwe.register.UnweRegister.services.AgreementService;
 
-import javax.validation.Valid;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -55,8 +54,9 @@ public class AgreementController {
     }
 
     @GetMapping
-    public ResponseEntity<AgreementsCatalogResponse> getAllAgreements(@RequestParam("page") int page) {
-        return ResponseEntity.ok(agreementService.getAllAgreements(page));
+    public ResponseEntity<AgreementsCatalogResponse> getAllAgreements(@RequestParam("page") int page,
+                                                                      @RequestParam("search") String search) {
+        return ResponseEntity.ok(agreementService.getAllAgreements(page, search));
     }
 
     @GetMapping("/{agreementId}")

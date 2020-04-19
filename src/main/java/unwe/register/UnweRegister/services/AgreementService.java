@@ -132,8 +132,15 @@ public class AgreementService {
         throw new UnsupportedFileFormat(UNSUPPORTED_FILE_FORMAT);
     }
 
-    public AgreementsCatalogResponse getAllAgreements(int page) {
-        List<AgreementResponse> agreements = agreementRepository.findAllByOrderByDateDesc(PageRequest.of(page, ELEMENTS_PER_PAGE))
+    public AgreementsCatalogResponse getAllAgreements(int page, String search) {
+        long number = 0;
+        if (search.matches("[0-9]+")) {
+            number = Long.parseLong(search);
+        }
+
+        List<AgreementResponse> agreements = agreementRepository
+                .findAllByUidContainingOrTitleContainingOrCoordinatorFirstNameContainingOrCoordinatorLastNameContainingOrEmployerFirstNameContainingOrEmployerLastNameContainingOrNumberOrderByDateDesc(
+                        PageRequest.of(page, ELEMENTS_PER_PAGE), search, search, search, search, search, search, number)
                 .stream()
                 .map(agreement -> {
                     AgreementResponse agreementResponse = modelMapper.map(agreement, AgreementResponse.class);
@@ -142,12 +149,17 @@ public class AgreementService {
                 })
                 .collect(Collectors.toList());
 
-        return new AgreementsCatalogResponse(agreements, agreementRepository.count());
+        return new AgreementsCatalogResponse(agreements, agreementRepository
+                .countByUidContainingOrTitleContainingOrCoordinatorFirstNameContainingOrCoordinatorLastNameContainingOrEmployerFirstNameContainingOrEmployerLastNameContainingOrNumber(
+                        search, search, search, search, search, search, number));
     }
 
     public AgreementResponse getAgreementInfo(String agreementId) {
-        AgreementResponse agreementResponse = modelMapper.map(getAgreementById(agreementId), AgreementResponse.class);
-        agreementResponse.setPdfUrl(agreementPdfUrl + agreementId);
+        Agreement agreement = getAgreementById(agreementId);
+
+        AgreementResponse agreementResponse = modelMapper.map(agreement, AgreementResponse.class);
+        agreementResponse.setPdfUrl(agreement.getDocument() == null ? "" : agreementPdfUrl + agreement.getUid());
+
         return agreementResponse;
     }
 

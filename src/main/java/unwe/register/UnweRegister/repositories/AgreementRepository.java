@@ -11,7 +11,14 @@ import java.util.Optional;
 @Repository
 public interface AgreementRepository extends JpaRepository<Agreement, String> {
 
-    List<Agreement> findAllByOrderByDateDesc(Pageable pageable);
+    List<Agreement> findAllByUidContainingOrTitleContainingOrCoordinatorFirstNameContainingOrCoordinatorLastNameContainingOrEmployerFirstNameContainingOrEmployerLastNameContainingOrNumberOrderByDateDesc(
+            Pageable pageable, String uid, String title, String coordinatorFirstName, String coordinatorLastName,
+            String employerFirstName, String employerLastName, Long number);
+
+    Long countByUidContainingOrTitleContainingOrCoordinatorFirstNameContainingOrCoordinatorLastNameContainingOrEmployerFirstNameContainingOrEmployerLastNameContainingOrNumber(
+            String uid, String title, String coordinatorFirstName, String coordinatorLastName,
+            String employerFirstName, String employerLastName, Long number);
 
     Optional<Agreement> findByNumber(Long agreementNumber);
+
 }
