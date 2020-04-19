@@ -41,16 +41,18 @@ public class ActivityPlanController {
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('COORDINATOR') or hasRole('EMPLOYER')")
-    public ResponseEntity<ActivityPlansCatalogResponse> getActivityPlans(@RequestParam("page") int page) {
-        return ResponseEntity.ok(activityPlanService.getActivityPlans(page));
+    @PreAuthorize("hasRole('COORDINATOR')")
+    public ResponseEntity<ActivityPlansCatalogResponse> getActivityPlans(@RequestParam("page") int page,
+                                                                         @RequestParam("search") String search) {
+        return ResponseEntity.ok(activityPlanService.getActivityPlans(page, search));
     }
 
     @GetMapping("/user")
     @PreAuthorize("hasRole('EMPLOYER')")
     public ResponseEntity<ActivityPlansCatalogResponse> getActivityPlansForLoggedUser(@RequestParam("page") int page,
+                                                                                      @RequestParam("search") String search,
                                                                                       @RequestAttribute("userId") String userId) {
-        return ResponseEntity.ok(activityPlanService.getActivityPlansForUser(page, userId));
+        return ResponseEntity.ok(activityPlanService.getActivityPlansForUser(page, search, userId));
     }
 
     @DeleteMapping("/{activityPlanId}")
