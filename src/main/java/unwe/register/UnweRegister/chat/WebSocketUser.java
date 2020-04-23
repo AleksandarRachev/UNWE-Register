@@ -16,8 +16,4 @@ public class WebSocketUser {
     private String id;
     private String name;
 
-    public WebSocketUser(String name) {
-        this.name = name;
-        id = UUID.randomUUID().toString();
-    }
 }

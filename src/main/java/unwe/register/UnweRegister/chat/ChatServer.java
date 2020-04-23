@@ -8,8 +8,12 @@ import org.java_websocket.handshake.ClientHandshake;
 import org.java_websocket.server.WebSocketServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 import unwe.register.UnweRegister.chat.message.Message;
 import unwe.register.UnweRegister.chat.message.MessageType;
+import unwe.register.UnweRegister.entities.User;
+import unwe.register.UnweRegister.services.UserService;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -17,6 +21,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+@Component
 public class ChatServer extends WebSocketServer {
 
     private static final String CHAT_SERVER_STARTED = "Chat server on port(s): ";
@@ -25,6 +30,7 @@ public class ChatServer extends WebSocketServer {
     private static final String MESSAGE_ERROR = "Problem with message";
     private static final String CONNECTION_CLOSED = "Closed connection to ";
     private static final String CONNECTION_OPEN = "New connection from ";
+    private static final int CHAT_PORT = 9000;
 
     static Logger logger = LoggerFactory.getLogger(ChatServer.class);
 
@@ -32,10 +38,14 @@ public class ChatServer extends WebSocketServer {
 
     private final ObjectMapper mapper;
 
-    public ChatServer(int port) {
-        super(new InetSocketAddress(port));
+    private final UserService userService;
+
+    @Autowired
+    public ChatServer(UserService userService) {
+        super(new InetSocketAddress(CHAT_PORT));
         this.connections = new HashMap<>();
         this.mapper = new ObjectMapper();
+        this.userService = userService;
     }
 
     @Override
@@ -66,7 +76,7 @@ public class ChatServer extends WebSocketServer {
             Message msg = mapper.readValue(message, Message.class);
             switch (msg.getType()) {
                 case USER_JOINED:
-                    addUser(new WebSocketUser(msg.getUser().getName()), conn, msg.getRoom());
+                    addUser(msg.getUser().getId(), conn, msg.getRoom());
                     break;
                 case TEXT_MESSAGE:
                     broadcastMessage(msg, msg.getRoom());
@@ -94,13 +104,17 @@ public class ChatServer extends WebSocketServer {
         }
     }
 
-    private void addUser(WebSocketUser user, WebSocket conn, String room) throws JsonProcessingException {
+    private void addUser(String id, WebSocket conn, String room) throws JsonProcessingException {
         connections.computeIfAbsent(room, k -> new ArrayList<>());
         connections.get(room).add(conn);
-        broadcastUserActivityMessage(user, MessageType.USER_JOINED, room);
+
+        User user = userService.getUser(id);
+
+        broadcastUserActivityMessage(new WebSocketUser(user.getUid(), user.getFirstName() + " " + user.getLastName()), MessageType.USER_JOINED, room);
     }
 
-    private void broadcastUserActivityMessage(WebSocketUser user, MessageType messageType, String room) throws JsonProcessingException {
+    private void broadcastUserActivityMessage(WebSocketUser user, MessageType messageType, String room)
+            throws JsonProcessingException {
 
         Message newMessage = new Message();
 
@@ -109,10 +123,9 @@ public class ChatServer extends WebSocketServer {
         broadcastMessage(newMessage, room);
     }
 
-    public static void ChatServerApp() {
-        int port = 9000;
-        new ChatServer(port).start();
-        logger.info(CHAT_SERVER_STARTED + port + WEB_SOCKET_INFO);
+    public static void ChatServerApp(UserService userService) {
+        new ChatServer(userService).start();
+        logger.info(CHAT_SERVER_STARTED + CHAT_PORT + WEB_SOCKET_INFO);
     }
 
 }

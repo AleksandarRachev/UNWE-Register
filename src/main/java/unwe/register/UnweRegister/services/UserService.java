@@ -163,7 +163,7 @@ public class UserService {
         return getUser(userId).getImage();
     }
 
-    protected User getUser(String userId) {
+    public User getUser(String userId) {
         return userRepository.findById(userId).orElseThrow(() -> new ElementNotPresentException(USER_NOT_FOUND));
     }
 
