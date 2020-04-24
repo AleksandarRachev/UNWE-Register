@@ -2,12 +2,12 @@ package unwe.register.UnweRegister.services;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.parameters.P;
 import org.springframework.stereotype.Service;
 import unwe.register.UnweRegister.dtos.chats.ChatResponse;
 import unwe.register.UnweRegister.entities.Chat;
 import unwe.register.UnweRegister.entities.User;
 import unwe.register.UnweRegister.enums.Role;
+import unwe.register.UnweRegister.exceptions.ElementAlreadyExistsException;
 import unwe.register.UnweRegister.exceptions.InvalidOperationException;
 import unwe.register.UnweRegister.repositories.ChatRepository;
 
@@ -20,6 +20,7 @@ public class ChatService {
 
     private static final String CHAT_CREATED = "Chat created: ";
     private static final String CANNOT_CREATE_CHAT = "Cannot create chat with yourself!";
+    private static final String CONNECTION_EXISTS = "You already have a connection with this user!";
 
     private final ChatRepository chatRepository;
 
@@ -36,7 +37,7 @@ public class ChatService {
 
     public String createChatForUser(String chatUserId, String userId) {
 
-        if(chatUserId.equals(userId)){
+        if (chatUserId.equals(userId)) {
             throw new InvalidOperationException(CANNOT_CREATE_CHAT);
         }
 
@@ -64,7 +65,11 @@ public class ChatService {
             chat = chatRepository.findByEmployerUidAndCoordinatorUid(loggedUser.getUid(), chatUserId);
         }
 
-        return chat.orElseGet(() -> createAndGetChatDependingOnRole(chatUserId, loggedUser));
+        if (chat.isPresent()) {
+            throw new ElementAlreadyExistsException(CONNECTION_EXISTS);
+        }
+
+        return createAndGetChatDependingOnRole(chatUserId, loggedUser);
     }
 
     public List<ChatResponse> getChatsForUser(String userId) {
