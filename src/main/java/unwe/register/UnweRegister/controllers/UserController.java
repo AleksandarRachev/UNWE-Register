@@ -68,4 +68,11 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllEmployers());
     }
 
+    @GetMapping("/all")
+    @PreAuthorize("hasRole('EMPLOYER') or hasRole('COORDINATOR')")
+    public ResponseEntity<List<UserResponse>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
+
+
 }

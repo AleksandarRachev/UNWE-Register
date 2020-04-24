@@ -55,4 +55,7 @@ public class User {
     @OneToMany(mappedBy = "coordinator")
     private List<Agreement> agreements;
 
+    @OneToMany(mappedBy = "coordinator")
+    private List<Chat> chats;
+
 }

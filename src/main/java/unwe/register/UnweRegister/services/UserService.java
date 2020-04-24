@@ -195,4 +195,11 @@ public class UserService {
                 .map(user -> modelMapper.map(user, UserResponse.class))
                 .collect(Collectors.toList());
     }
+
+    public List<UserResponse> getAllUsers() {
+        return userRepository.findAll()
+                .stream()
+                .map(user -> modelMapper.map(user, UserResponse.class))
+                .collect(Collectors.toList());
+    }
 }
