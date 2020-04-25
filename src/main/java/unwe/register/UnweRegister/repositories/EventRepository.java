@@ -13,6 +13,9 @@ public interface EventRepository extends JpaRepository<Event, String> {
     List<Event> findAllByTitleContainingOrActivityPlanAgreementEmployerCompanyNameContainingOrderByMadeOnDesc(
             Pageable pageable, String title, String companyName);
 
-    long countByTitleContaining(String title);
+    List<Event> findAllByTitleContainingOrActivityPlanAgreementEmployerCompanyNameContainingOrderByMadeOnAsc(
+            Pageable pageable, String title, String companyName);
+
+    long countByTitleContainingOrActivityPlanAgreementEmployerCompanyNameContaining(String title, String companyName);
 
 }

@@ -101,11 +101,19 @@ public class EventService {
         return getEvent(eventId).getImage();
     }
 
-    public EventCatalogResponse getEvents(int page, String search) {
-        List<EventResponse> events = eventRepository
-                .findAllByTitleContainingOrActivityPlanAgreementEmployerCompanyNameContainingOrderByMadeOnDesc(
-                        PageRequest.of(page, EVENTS_PER_PAGE), search, search)
-                .stream()
+    public EventCatalogResponse getEvents(int page, String search, String sort) {
+        List<Event> events;
+        if (sort.equalsIgnoreCase("desc")) {
+            events = eventRepository
+                    .findAllByTitleContainingOrActivityPlanAgreementEmployerCompanyNameContainingOrderByMadeOnDesc(
+                            PageRequest.of(page, EVENTS_PER_PAGE), search, search);
+        } else {
+            events = eventRepository
+                    .findAllByTitleContainingOrActivityPlanAgreementEmployerCompanyNameContainingOrderByMadeOnAsc(
+                            PageRequest.of(page, EVENTS_PER_PAGE), search, search);
+        }
+
+        return new EventCatalogResponse(events.stream()
                 .map(event -> {
                     EventResponse eventResponse = modelMapper.map(event, EventResponse.class);
                     if (event.getImage() != null) {
@@ -113,9 +121,8 @@ public class EventService {
                     }
                     return eventResponse;
                 })
-                .collect(Collectors.toList());
-
-        return new EventCatalogResponse(events, eventRepository.countByTitleContaining(search));
+                .collect(Collectors.toList()),
+                eventRepository.countByTitleContainingOrActivityPlanAgreementEmployerCompanyNameContaining(search, search));
     }
 
     public String deleteEvent(String eventId, String userId) {

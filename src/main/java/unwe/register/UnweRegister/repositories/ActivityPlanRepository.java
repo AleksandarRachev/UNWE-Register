@@ -13,10 +13,16 @@ public interface ActivityPlanRepository extends JpaRepository<ActivityPlan, Stri
     List<ActivityPlan> findAllByAgreementEmployerUidAndUidContainingOrAgreementEmployerUidAndAgreementNumberOrderByMadeOnDesc(
             Pageable pageable, String userId, String uid, String userId2, Long agreementNumber);
 
+    List<ActivityPlan> findAllByAgreementEmployerUidAndUidContainingOrAgreementEmployerUidAndAgreementNumberOrderByMadeOnAsc(
+            Pageable pageable, String userId, String uid, String userId2, Long agreementNumber);
+
     Long countByAgreementEmployerUidAndUidContainingOrAgreementEmployerUidAndAgreementNumber(
             String userId, String uid, String userId2, Long agreementNumber);
 
     List<ActivityPlan> findAllByUidContainingOrAgreementNumberOrderByMadeOnDesc(
+            Pageable pageable, String uid, Long agreementNumber);
+
+    List<ActivityPlan> findAllByUidContainingOrAgreementNumberOrderByMadeOnAsc(
             Pageable pageable, String uid, Long agreementNumber);
 
     Long countByUidContainingOrAgreementNumber(String uid, Long agreementNumber);

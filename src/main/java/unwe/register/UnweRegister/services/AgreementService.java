@@ -132,24 +132,30 @@ public class AgreementService {
         throw new UnsupportedFileFormat(UNSUPPORTED_FILE_FORMAT);
     }
 
-    public AgreementsCatalogResponse getAllAgreements(int page, String search) {
+    public AgreementsCatalogResponse getAllAgreements(int page, String search, String sort) {
         long number = 0;
         if (search.matches("[0-9]+")) {
             number = Long.parseLong(search);
         }
 
-        List<AgreementResponse> agreements = agreementRepository
-                .findAllByUidContainingOrTitleContainingOrCoordinatorFirstNameContainingOrCoordinatorLastNameContainingOrEmployerFirstNameContainingOrEmployerLastNameContainingOrNumberOrderByDateDesc(
-                        PageRequest.of(page, ELEMENTS_PER_PAGE), search, search, search, search, search, search, number)
-                .stream()
+        List<Agreement> agreements;
+        if (sort.equalsIgnoreCase("desc")) {
+            agreements = agreementRepository
+                    .findAllByUidContainingOrTitleContainingOrCoordinatorFirstNameContainingOrCoordinatorLastNameContainingOrEmployerFirstNameContainingOrEmployerLastNameContainingOrNumberOrderByDateDesc(
+                            PageRequest.of(page, ELEMENTS_PER_PAGE), search, search, search, search, search, search, number);
+        } else {
+            agreements = agreementRepository
+                    .findAllByUidContainingOrTitleContainingOrCoordinatorFirstNameContainingOrCoordinatorLastNameContainingOrEmployerFirstNameContainingOrEmployerLastNameContainingOrNumberOrderByDateAsc(
+                            PageRequest.of(page, ELEMENTS_PER_PAGE), search, search, search, search, search, search, number);
+        }
+
+        return new AgreementsCatalogResponse(agreements.stream()
                 .map(agreement -> {
                     AgreementResponse agreementResponse = modelMapper.map(agreement, AgreementResponse.class);
                     agreementResponse.setPdfUrl(agreement.getDocument() == null ? "" : agreementPdfUrl + agreement.getUid());
                     return agreementResponse;
                 })
-                .collect(Collectors.toList());
-
-        return new AgreementsCatalogResponse(agreements, agreementRepository
+                .collect(Collectors.toList()), agreementRepository
                 .countByUidContainingOrTitleContainingOrCoordinatorFirstNameContainingOrCoordinatorLastNameContainingOrEmployerFirstNameContainingOrEmployerLastNameContainingOrNumber(
                         search, search, search, search, search, search, number));
     }

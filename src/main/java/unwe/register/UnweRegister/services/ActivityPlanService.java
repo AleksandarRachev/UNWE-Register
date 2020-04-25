@@ -47,16 +47,22 @@ public class ActivityPlanService {
         return modelMapper.map(activityPlanRepository.save(activityPlan), ActivityPlanResponse.class);
     }
 
-    public ActivityPlansCatalogResponse getActivityPlans(int page, String search) {
+    public ActivityPlansCatalogResponse getActivityPlans(int page, String search, String sort) {
         long number = convertToNumber(search);
 
-        List<ActivityPlanResponse> activityPlans = activityPlanRepository
-                .findAllByUidContainingOrAgreementNumberOrderByMadeOnDesc(PageRequest.of(page, ELEMENTS_PER_PAGE), search, number)
+        List<ActivityPlan> activityPlans;
+        if (sort.equalsIgnoreCase("desc")) {
+            activityPlans = activityPlanRepository
+                    .findAllByUidContainingOrAgreementNumberOrderByMadeOnDesc(PageRequest.of(page, ELEMENTS_PER_PAGE), search, number);
+        } else {
+            activityPlans = activityPlanRepository
+                    .findAllByUidContainingOrAgreementNumberOrderByMadeOnAsc(PageRequest.of(page, ELEMENTS_PER_PAGE), search, number);
+        }
+
+        return new ActivityPlansCatalogResponse(activityPlans
                 .stream()
                 .map(activityPlan -> modelMapper.map(activityPlan, ActivityPlanResponse.class))
-                .collect(Collectors.toList());
-
-        return new ActivityPlansCatalogResponse(activityPlans, activityPlanRepository
+                .collect(Collectors.toList()), activityPlanRepository
                 .countByUidContainingOrAgreementNumber(search, number));
     }
 
@@ -77,16 +83,23 @@ public class ActivityPlanService {
                 .orElseThrow(() -> new ElementNotPresentException(ACTIVITY_PLAN_NOT_FOUND));
     }
 
-    public ActivityPlansCatalogResponse getActivityPlansForUser(int page, String search, String userId) {
+    public ActivityPlansCatalogResponse getActivityPlansForUser(int page, String search, String sort, String userId) {
         long number = convertToNumber(search);
 
-        List<ActivityPlanResponse> activityPlans = activityPlanRepository
-                .findAllByAgreementEmployerUidAndUidContainingOrAgreementEmployerUidAndAgreementNumberOrderByMadeOnDesc(
-                        PageRequest.of(page, ELEMENTS_PER_PAGE), userId, search, userId, number)
+        List<ActivityPlan> activityPlans;
+        if (sort.equalsIgnoreCase("desc")) {
+            activityPlans = activityPlanRepository
+                    .findAllByAgreementEmployerUidAndUidContainingOrAgreementEmployerUidAndAgreementNumberOrderByMadeOnDesc(
+                            PageRequest.of(page, ELEMENTS_PER_PAGE), userId, search, userId, number);
+        } else {
+            activityPlans = activityPlanRepository
+                    .findAllByAgreementEmployerUidAndUidContainingOrAgreementEmployerUidAndAgreementNumberOrderByMadeOnAsc(
+                            PageRequest.of(page, ELEMENTS_PER_PAGE), userId, search, userId, number);
+        }
+        return new ActivityPlansCatalogResponse(activityPlans
                 .stream()
                 .map(activityPlan -> modelMapper.map(activityPlan, ActivityPlanResponse.class))
-                .collect(Collectors.toList());
-        return new ActivityPlansCatalogResponse(activityPlans, activityPlanRepository
+                .collect(Collectors.toList()), activityPlanRepository
                 .countByAgreementEmployerUidAndUidContainingOrAgreementEmployerUidAndAgreementNumber(
                         userId, search, userId, number));
     }

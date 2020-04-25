@@ -46,8 +46,9 @@ public class EventController {
     @PreAuthorize("permitAll()")
     public ResponseEntity<EventCatalogResponse> getAllEvents(
             @RequestParam("page") int page,
-            @RequestParam(value = "search", required = false, defaultValue = "") String search) {
-        return ResponseEntity.ok(eventService.getEvents(page, search));
+            @RequestParam(value = "search", required = false, defaultValue = "") String search,
+            @RequestParam(value = "sort", required = false, defaultValue = "DESC") String sort) {
+        return ResponseEntity.ok(eventService.getEvents(page, search, sort));
     }
 
     @GetMapping("/{eventId}")

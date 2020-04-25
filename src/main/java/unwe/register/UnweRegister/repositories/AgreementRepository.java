@@ -15,6 +15,10 @@ public interface AgreementRepository extends JpaRepository<Agreement, String> {
             Pageable pageable, String uid, String title, String coordinatorFirstName, String coordinatorLastName,
             String employerFirstName, String employerLastName, Long number);
 
+    List<Agreement> findAllByUidContainingOrTitleContainingOrCoordinatorFirstNameContainingOrCoordinatorLastNameContainingOrEmployerFirstNameContainingOrEmployerLastNameContainingOrNumberOrderByDateAsc(
+            Pageable pageable, String uid, String title, String coordinatorFirstName, String coordinatorLastName,
+            String employerFirstName, String employerLastName, Long number);
+
     Long countByUidContainingOrTitleContainingOrCoordinatorFirstNameContainingOrCoordinatorLastNameContainingOrEmployerFirstNameContainingOrEmployerLastNameContainingOrNumber(
             String uid, String title, String coordinatorFirstName, String coordinatorLastName,
             String employerFirstName, String employerLastName, Long number);

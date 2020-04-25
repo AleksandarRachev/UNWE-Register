@@ -54,9 +54,11 @@ public class AgreementController {
     }
 
     @GetMapping
-    public ResponseEntity<AgreementsCatalogResponse> getAllAgreements(@RequestParam("page") int page,
-                                                                      @RequestParam("search") String search) {
-        return ResponseEntity.ok(agreementService.getAllAgreements(page, search));
+    public ResponseEntity<AgreementsCatalogResponse> getAllAgreements(
+            @RequestParam("page") int page,
+            @RequestParam("search") String search,
+            @RequestParam(value = "sort", required = false, defaultValue = "DESC") String sort) {
+        return ResponseEntity.ok(agreementService.getAllAgreements(page, search, sort));
     }
 
     @GetMapping("/{agreementId}")
