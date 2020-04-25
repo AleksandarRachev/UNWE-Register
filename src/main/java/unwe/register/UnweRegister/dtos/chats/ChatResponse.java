@@ -19,4 +19,10 @@ public class ChatResponse {
 
     private String coordinatorLastName;
 
+    private String employerImageUrl;
+
+    private String coordinatorImageUrl;
+
+    private String company;
+
 }

@@ -199,7 +199,23 @@ public class UserService {
     public List<UserResponse> getAllUsers() {
         return userRepository.findAll()
                 .stream()
-                .map(user -> modelMapper.map(user, UserResponse.class))
+                .map(user -> {
+                    UserResponse userResponse = modelMapper.map(user, UserResponse.class);
+                    if (user.getImage() != null) {
+                        userResponse.setImageUrl(pictureUserUrl + user.getUid());
+                    }
+                    return userResponse;
+                })
                 .collect(Collectors.toList());
+    }
+
+    public UserResponse getUserDetails(String userId) {
+        User user = getUser(userId);
+
+        UserResponse userResponse = modelMapper.map(user, UserResponse.class);
+        if (user.getImage() != null) {
+            userResponse.setImageUrl(pictureUserUrl + userId);
+        }
+        return userResponse;
     }
 }

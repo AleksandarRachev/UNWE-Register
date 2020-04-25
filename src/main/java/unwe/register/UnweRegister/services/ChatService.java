@@ -2,6 +2,7 @@ package unwe.register.UnweRegister.services;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import unwe.register.UnweRegister.dtos.chats.ChatResponse;
 import unwe.register.UnweRegister.entities.Chat;
@@ -27,6 +28,9 @@ public class ChatService {
     private final ModelMapper modelMapper;
 
     private final UserService userService;
+
+    @Value("${picture.url.user}")
+    private String pictureUserUrl;
 
     @Autowired
     public ChatService(ChatRepository chatRepository, ModelMapper modelMapper, UserService userService) {
@@ -83,7 +87,17 @@ public class ChatService {
         }
 
         return chats.stream()
-                .map(chat -> modelMapper.map(chat, ChatResponse.class))
+                .map(chat -> {
+                    ChatResponse chatResponse = modelMapper.map(chat, ChatResponse.class);
+                    if(chat.getCoordinator().getImage() != null) {
+                        chatResponse.setCoordinatorImageUrl(pictureUserUrl + chat.getCoordinator().getUid());
+                    }
+                    if(chat.getEmployer().getImage() != null) {
+                        chatResponse.setEmployerImageUrl(pictureUserUrl + chat.getEmployer().getUid());
+                    }
+                    chatResponse.setCompany(chat.getEmployer().getCompanyName());
+                    return chatResponse;
+                })
                 .collect(Collectors.toList());
     }
 }

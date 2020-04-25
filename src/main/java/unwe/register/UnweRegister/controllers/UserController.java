@@ -74,5 +74,11 @@ public class UserController {
         return ResponseEntity.ok(userService.getAllUsers());
     }
 
+    @GetMapping("/{userId}/details")
+    @PreAuthorize("permitAll()")
+    public ResponseEntity<UserResponse> getUserDetails(@PathVariable("userId") String userId) {
+        return ResponseEntity.ok(userService.getUserDetails(userId));
+    }
+
 
 }
