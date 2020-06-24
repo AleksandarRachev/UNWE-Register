@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 @Data
 @NoArgsConstructor
@@ -13,6 +14,7 @@ import javax.validation.constraints.NotNull;
 public class ActivityPlanRequest {
 
     @NotBlank(message = "Description must not be empty!")
+    @Size(max = 2500, message = "Description must not be more than 2500 symbols!")
     private String description;
 
     @NotNull(message = "Agreement number must not be empty!")
